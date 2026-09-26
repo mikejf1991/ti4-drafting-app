@@ -143,3 +143,31 @@ Open Items
 - Pending user Supabase/Vercel sign-in: run database/001_rooms.sql, configure server-only environment variables, deploy, and verify real Supabase-backed actions before completing the goal.
 - Local preview remains on port 3005. Completed browser test room d3c993f0-7e61-4e8e-a527-790ad0fdc723; screenshot .scratch/completed-galaxy.png. Production smoke tests used port 3184.
 - Known limits: no public room-creation rate limit or host-link recovery/rotation; host must retain its private return link. No paid services or deployment created.
+## 2026-09-26 11:17 America/Chicago
+Entry ID: LOG-0005
+
+Request
+- Continue the app implementation and online deployment goal.
+
+Context
+- Tracked baseline clean at 17d06ba; original nine untracked reference media files unchanged. Scope: revalidate deployment access and record the blocked handoff.
+- Prior continuation was no progress: sign-in screens were unchanged. The same genuine blocker now persisted across three consecutive goal turns.
+
+Actions
+- Checked current browser state: Supabase displayed Sign in to your account; Vercel's GitHub flow displayed Sign in. No newly authorized dashboard access was available.
+- Preserved the sign-in tabs and local practice views. Called update_goal, which returned blocked.
+- Updated PROJECT_STATE.md and created matching log entries; made no app or remote infrastructure changes.
+
+Files Changed
+- PROJECT_STATE.md
+
+Change Scope
+- Intended and actual: verify unchanged access barrier and save an accurate deployment handoff.
+
+Verification
+- Passed: live UI checks confirmed both sign-in barriers. Git verified tracked source unchanged at the previously tested implementation.
+- Runtime Supabase key cannot create the isolated table; no Vercel authenticated session is available. Online completion remains unproven and incomplete.
+- No tests rerun because only status/log documentation changed.
+
+Open Items
+- User signs into the retained Supabase and Vercel tabs, then resumes work. Next: run the isolated migration, configure production server environment, deploy, and verify the hosted app before marking complete.

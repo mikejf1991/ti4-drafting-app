@@ -42,3 +42,14 @@ Discussion
 
 Outcome
 - Local application, build, 21 tests, full API draft, independent-seat browser checks and exports pass. Supabase migration and Vercel deployment remain pending user sign-in; goal stays active.
+## 2026-09-26 11:17 America/Chicago
+Entry ID: LOG-0005
+
+Request
+- Continue the app implementation and online deployment goal.
+
+Discussion
+- Previous continuation made no progress because dashboard access was unchanged. Revalidated both live sign-in pages and the clean tracked worktree. The same access barrier persisted for three goal turns; runtime Supabase keys cannot provision the schema and no Vercel session is available.
+
+Outcome
+- Goal marked blocked pending user Supabase and Vercel sign-in. Local implementation remains verified and pushed at 17d06ba; online migration and deployment remain incomplete.
