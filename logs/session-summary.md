@@ -107,4 +107,4 @@ Discussion
 - Added compact per-planet R/I rows and labeled color-coded tech badges to both normal and opening hands. Keep multi-planet values separate and exclude legendary status from tech skips; include stats in accessible button labels.
 
 Outcome
-- Production build and TypeScript passed. Browser verified Tarmann 1/1 Biotic, separate Vega Major/Minor stats, no horizontal overflow, and existing click-to-inspect. Ready to publish and check hosted rendering.
+- Deployed 983a7b4. Build/TypeScript and local/hosted browser checks passed: separate planet values, color-labeled tech skips, no horizontal overflow, and retained click-to-inspect. The live hand displays stats before any inspector is opened.

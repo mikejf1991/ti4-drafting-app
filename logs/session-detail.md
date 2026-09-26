@@ -314,6 +314,7 @@ Verification
 - Passed production build including TypeScript and git diff whitespace checks.
 - Browser verified Tar'mann 1/1 Biotic, Vega Major 2/1 and Vega Minor 1/2 Propulsion in separate rows; Primor has no false tech-skip badge and planetless tiles show no invented values.
 - No hand or page horizontal overflow at desktop size. Tar'mann still opens its inspector. No new tests were added for this display-only change and backend checks were not rerun.
+- Vercel reported 983a7b4 deployed. Hosted browser verified Wellon 1/2 Cybernetic and separate Kraag 2/1 / Siig 0/2, with no hand overflow and no inspector open. Saved proof in ignored .scratch/hosted-tile-stats.png.
 
 Open Items
-- Verify the hosted UI after the automatic deployment.
+- None. Refresh existing tabs to load the new hand display.
