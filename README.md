@@ -1,6 +1,6 @@
 # TI4 Drafting App
 
-An eight-player, asynchronous faction and galaxy draft for an in-person Twilight Imperium Fourth Edition game. Built with Next.js 16, React 19, and TypeScript. The app is implemented; production deployment is pending Vercel login and Supabase database setup.
+An eight-player, asynchronous faction and galaxy draft for an in-person Twilight Imperium Fourth Edition game. Built with Next.js 16, React 19, and TypeScript. The app and Supabase backend are verified; Vercel publication is pending repository access.
 
 ## Run locally
 
@@ -28,6 +28,8 @@ Players can return asynchronously using their saved links. Online clients refres
 
 Practice rooms additionally offer sample ranking completion and shortcuts to open each seat. The host still uses a seat's private link to place its tiles.
 
+On desktop, the complete board fits within the window and the controls scroll separately. Use the + / − buttons to zoom, drag to pan, and reset to fit the board again. The mouse wheel does not zoom the board. Expand the player roster when needed. Creuss remains in the map exports without a separate off-board inspection panel.
+
 ## Verify
 
 ```powershell
@@ -46,7 +48,7 @@ The API check creates two test rooms and verifies private access, concurrent upd
 
 ## Deploy to Vercel with Supabase
 
-Deployment is not complete. Sign into Vercel, import this repository as a Next.js project, and finish these steps:
+The isolated Supabase migration has been applied and tested against the real backend. Vercel publication is not complete; repository access is being enabled. For a new installation:
 
 1. Run [database/001_rooms.sql](database/001_rooms.sql) in the intended Supabase project's SQL editor. It creates the isolated `public.ti4_draft_rooms_v1` table. Row-level security is enabled, `anon` and `authenticated` receive no table access, and only the server's service role can read or write room state. The migration does not alter unrelated app tables.
 2. Set Vercel's server-only environment variables: `TI4_STORAGE=supabase`, `SUPABASE_URL`, and `SUPABASE_SECRET_KEY`. Use the Supabase project's secret/service-role key. Do not add a `NEXT_PUBLIC_` prefix or commit credentials.

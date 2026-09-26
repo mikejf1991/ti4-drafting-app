@@ -53,3 +53,14 @@ Discussion
 
 Outcome
 - Goal marked blocked pending user Supabase and Vercel sign-in. Local implementation remains verified and pushed at 17d06ba; online migration and deployment remain incomplete.
+## 2026-09-26 11:49 America/Chicago
+Entry ID: LOG-0006
+
+Request
+- Fit the desktop board, remove mouse-wheel zoom and Creuss inspection, and finish online deployment.
+
+Discussion
+- Applied the isolated Supabase migration and verified actual private-seat HTTP flows. User manually enabled TI4 access in the existing Vercel GitHub installation; Vercel now lists the repository.
+
+Outcome
+- Desktop changes and real Supabase backend passed verification. Push this verified release before importing and testing the hosted app.

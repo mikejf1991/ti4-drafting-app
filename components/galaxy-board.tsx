@@ -52,7 +52,6 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
       <button type="button" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }} aria-label="Reset board view">⌖</button>
     </div>}
     <svg className="board-svg" viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`} role="img" aria-label="Eight-player galaxy board with four rings of hexagonal tiles"
-      onWheel={compact ? undefined : e => { e.preventDefault(); changeZoom(zoom + (e.deltaY < 0 ? .1 : -.1)); }}
       onPointerDown={compact ? undefined : e => { if (e.button !== 0) return; drag.current = { x: e.clientX, y: e.clientY, moved: false }; }}
       onPointerMove={compact ? undefined : e => { if (!drag.current) return; const dx = e.clientX - drag.current.x, dy = e.clientY - drag.current.y; if (!drag.current.moved && Math.abs(dx) + Math.abs(dy) > 4) { drag.current.moved = true; e.currentTarget.setPointerCapture(e.pointerId); } if (drag.current.moved) setPan(p => ({ x: p.x + dx, y: p.y + dy })); drag.current.x = e.clientX; drag.current.y = e.clientY; }}
       onPointerUp={compact ? undefined : () => { suppressClick.current = Boolean(drag.current?.moved); drag.current = null; window.setTimeout(() => { suppressClick.current = false; }, 80); }}>
@@ -87,6 +86,6 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
         })}
       </g>
     </svg>
-    {!compact && <div className="board-hint">Scroll to zoom · Drag to explore · Select a hex to inspect</div>}
+    {!compact && <div className="board-hint">Use + / − to zoom · Drag to explore · Select a hex to inspect</div>}
   </div>;
 }

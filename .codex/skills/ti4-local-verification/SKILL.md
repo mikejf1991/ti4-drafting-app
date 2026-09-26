@@ -9,7 +9,7 @@ description: >
 This is the proven local path for the TI4 Drafting App. Run commands in `C:\Users\polymergroup\Desktop\TI4 Drafting App`; inspect the current repo first if it has moved.
 
 **Failure pattern:** A similarly named Documents checkout, npm peer-resolution errors, or Next tracing local room data can give misleading failures or test the wrong code.
-**Verified by:** `npm test` passed 21 tests, `npm run build` completed cleanly, and the production server passed `node scripts/verify-api.mjs http://127.0.0.1:3184` with eight scenarios and 61 board tiles. Browser checks independently opened seat links and confirmed private views; three downloaded exports were verified by exact filenames.
+**Verified by:** `npm test` passed 21 tests, `npm run build` completed cleanly, and the production server passed `node scripts/verify-api.mjs http://127.0.0.1:3184` with eight scenarios and 61 board tiles, including against the provisioned Supabase table. Browser checks independently opened seat links and confirmed private views; three downloaded exports were verified by exact filenames.
 
 ## Procedure
 
@@ -19,14 +19,21 @@ This is the proven local path for the TI4 Drafting App. Run commands in `C:\User
 4. Start the built app from this directory with `node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3184`. Keep the process handle for polling and shutdown. Then run `node scripts/verify-api.mjs http://127.0.0.1:3184`. The script creates marked practice rooms and checks the real HTTP API; run it only against the intended local or staging instance.
 5. Check the UI separately in a browser: create/open a practice room, independently open seat links, and verify that one seat cannot see another seat's ranking or hand. Use computer/browser UI tools for interactions and the HTTP script for API assertions. For export downloads, click the control and check the exact expected filename in Downloads after the click; a download-event wait alone is not proof of failure. When the browser API provides screenshot bytes, save with `await fs.writeFile(path, await tab.screenshot())` and inspect the image.
 
+## Verify the real Supabase backend
+
+1. Confirm that the isolated `public.ti4_draft_rooms_v1` table from `database/001_rooms.sql` has been provisioned. The migration grants access only to `service_role`; it does not alter SWPA tables. Keep `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in ignored `.env.local` and do not print their values.
+2. Start the built production server with `TI4_STORAGE=supabase` in its process environment, using the Next binary command in step 4. Run `node scripts/verify-api.mjs http://127.0.0.1:3184`; expect eight passed scenarios and 61 final board tiles. The script creates two marked practice rooms in the TI4 table.
+3. Probe `GET /rest/v1/ti4_draft_rooms_v1?select=id&limit=1` with Node `fetch`, printing only HTTP status and error code. Use the SWPA publishable key from the first line of the ignored `C:\Users\polymergroup\Desktop\2026-04 SWPA Mobile App Dev\Supabase\Supabase_Keys.txt` as `apikey`: it was denied with HTTP 401 and PostgreSQL code `42501`. Repeat with `SUPABASE_SECRET_KEY` from TI4 `.env.local`: it returned HTTP 200. Do not print response rows, request headers, or key values.
+
 ## Gotchas
 
 - `next.config.ts` sets `turbopack.root: process.cwd()` to avoid an unrelated parent lockfile. `lib/store.ts` uses `path.resolve(/* turbopackIgnore: true */ ...)` so runtime room data is never traced into deployment bundles.
-- Keep production secrets out of the client. `SUPABASE_URL` and `SUPABASE_SECRET_KEY` are server environment names; do not put their values in this skill, logs, or frontend variables. Local verification uses `TI4_STORAGE=local` instead.
-- A passing local build and smoke test does **not** prove the Supabase schema is provisioned or the app is deployed. Verify those separately against authoritative remote state.
+- Keep production secrets out of the client. `SUPABASE_URL` and `SUPABASE_SECRET_KEY` are server environment names; do not put their values in this skill, logs, or frontend variables. Choose `TI4_STORAGE=local` for filesystem tests and `TI4_STORAGE=supabase` only for the real backend check.
+- A passing build or local storage test does **not** prove Supabase provisioning or deployment. Verify those separately against authoritative remote state; the Supabase check above does not prove a Vercel deployment.
 
 ## What didn't work
 
 - Plain `npm install` before `.npmrc` was configured failed with npm's `null edgesOut` peer-resolution error. An earlier Vitest `4.0.18` installation ran tests but was superseded by the `4.1.11` plus `legacy-peer-deps` combination, which installed and audited with zero reported vulnerabilities.
 - In PowerShell, `npm run start -- --port 3184` lost the flag and treated `3184` as a directory. Invoke the Next binary through `node` with explicit `--hostname` and `--port` instead.
 - A browser `waitForEvent('download')` timed out after the PNG had actually saved. Check the exact downloaded file after clicking; all three export files were confirmed this way.
+- PowerShell `Invoke-WebRequest` returned a misleading 401 for the server key during the direct REST probe. Node `fetch`, matching the app's request shape, returned 200 for that key while the public key remained denied.

@@ -171,3 +171,33 @@ Verification
 
 Open Items
 - User signs into the retained Supabase and Vercel tabs, then resumes work. Next: run the isolated migration, configure production server environment, deploy, and verify the hosted app before marking complete.
+## 2026-09-26 11:49 America/Chicago
+Entry ID: LOG-0006
+
+Request
+- Fit the desktop board, remove mouse-wheel zoom and Creuss inspection, and finish online deployment.
+
+Context
+- Baseline: tracked files clean at e22d755; the original nine reference media files remained untracked and unchanged. User resumed the goal after signing into Supabase and Vercel.
+
+Actions
+- Removed wheel zoom and the off-board Creuss inspector. Made the desktop board fit the viewport, with separately scrolling controls and a collapsible roster; retained zoom buttons and Creuss export data.
+- Applied database/001_rooms.sql only to the isolated TI4 table in the existing authorized Supabase project. No SWPA tables were changed.
+- User chose to save Vercel's GitHub access change manually. Confirmed Vercel now lists TI4 alongside SWPA, and opened the TI4 import form on Hobby. Configured the three server-only variables as sensitive values.
+- Updated usage/deployment documentation and the project verification skill with the proven real-backend checks. Credentials and screenshots remain ignored.
+
+Files Changed
+- app/globals.css, components/galaxy-board.tsx, components/room-client.tsx, README.md, PROJECT_STATE.md, .codex/skills/ti4-local-verification/SKILL.md
+
+Change Scope
+- Intent: fit the board and finish online deployment.
+- Actual: desktop UI and real Supabase backend verified; Vercel release configured for the next step.
+
+Verification
+- Passed: 21 unit tests, TypeScript, and production build.
+- Browser: all 61 cells fit at actual 1366x720 and 1440x852 viewports; wheel input left board transform and page scroll unchanged.
+- Supabase-backed production server on port 3184 passed all eight API scenarios, including private projections, concurrent updates, invitation replacement, and 52 placements yielding 61 cells.
+- Supabase SQL confirmed RLS enabled and no anon/authenticated privileges. Direct REST returned 401/42501 for the public key and 200 for the server key.
+
+Open Items
+- Push this verified UI release, deploy the configured Vercel import, and verify the hosted app before completing the goal.
