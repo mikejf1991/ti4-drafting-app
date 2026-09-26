@@ -1,0 +1,45 @@
+## 2026-09-26 10:14 America/Chicago
+Entry ID: LOG-0001
+
+Request
+- Use the Desktop TI4 project; bootstrap private ti4-drafting-app; inspect rules and discuss async faction allocation, seating, speaker, and placement.
+
+Context
+- Logged via `scripts/log-turn.sh`.
+- Correct project root is C:\Users\polymergroup\Desktop\TI4 Drafting App; the original chat working directory was an unrelated empty Documents\ChatGPT folder.
+- Worktree Baseline: not yet a Git repository; pre-existing local reference files only.
+- Pre-existing Dirty Files: IMG_4675.heic, IMG_4676.heic, IMG_4677.heic, IMG_4678.heic, IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg, ScreenRecording_08-18-2026 10-30-08_1.mp4. All remain unchanged and untracked.
+
+Actions
+- Added matching entries to `logs/session-summary.md` and `logs/session-detail.md`.
+- Ran the bootstrap skill helper and created private mikejf1991/ti4-drafting-app after the user selected that name.
+- Inspected all eight reference images; verified standard speaker selection against the official PoK Living Rules Reference and checked tile 51 accessibility.
+- Recorded agreed requirements, photographed map rules, asset ranges, and open decisions in docs/DRAFT_RULES.md. Application implementation remains on hold pending discussion.
+- Prepared a focused initial commit of bootstrap and discovery files. Push the new main branch to origin and verify afterward.
+
+Files Changed
+- .gitignore
+- AGENT.MD
+- PROJECT_STATE.md
+- README.md
+- docs/DRAFT_RULES.md
+- scripts/log-turn.sh
+- logs/archive/.gitkeep
+
+Change Scope
+- Intended: bootstrap Git/GitHub and project workflow; inspect reference images and discuss draft requirements.
+- Actual: installed startup files and private remote, documented rules and accepted scope, and recorded pending choices. No app code, service configuration, or deployment.
+
+Verification
+- Confirmed new entries appended with ID `LOG-0001`.
+- Verified `logs/session-summary.md` and `logs/session-detail.md` syntax preserved.
+- Verification Status: passed for bootstrap and discovery; application tests are not applicable because there is no implementation.
+- GitHub CLI confirmed the remote is private; local root, main branch, and origin are correct.
+- WSL bash syntax check passed for scripts/log-turn.sh; copied agent and logger hashes match skill assets.
+- Tile 51 endpoint returned HTTP 200 and image/webp. All other requested endpoints were checked in the earlier discovery turn.
+
+Open Items
+- Accept or alter the proposed independent random speaker and standard speaker-first placement order.
+- Decide whether exhausted faction rankings pause allocation before lower priorities or resolve after automatic assignments.
+- Confirm the proposed 24 base-game plus PoK factions and any exclusions/additions.
+- Supabase is chosen but not provisioned. Frontend hosting is undecided. MP4 was not reviewed; photographed rules were sufficient for this discussion.
