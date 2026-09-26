@@ -97,3 +97,14 @@ Discussion
 
 Outcome
 - Deployed c6a00a9. Passed 29 unit tests, production build, ten local and ten hosted HTTP scenarios, two-seat browser transition checks, and hosted fresh/legacy room checks. Verified all 48 normal picks and preserved existing rooms without reset.
+## 2026-09-26 17:40 America/Chicago
+Entry ID: LOG-0010
+
+Request
+- Show each planet resource, influence, and technology skip directly in Your tiles as illustrated in the attached screenshot.
+
+Discussion
+- Added compact per-planet R/I rows and labeled color-coded tech badges to both normal and opening hands. Keep multi-planet values separate and exclude legendary status from tech skips; include stats in accessible button labels.
+
+Outcome
+- Production build and TypeScript passed. Browser verified Tarmann 1/1 Biotic, separate Vega Major/Minor stats, no horizontal overflow, and existing click-to-inspect. Ready to publish and check hosted rendering.

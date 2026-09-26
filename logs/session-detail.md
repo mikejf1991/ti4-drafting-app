@@ -289,3 +289,31 @@ Verification
 
 Open Items
 - None for this correction. Refresh existing browser tabs to load the updated instructions and placement-order display.
+## 2026-09-26 17:40 America/Chicago
+Entry ID: LOG-0010
+
+Request
+- Show each planet resource, influence, and technology skip directly in Your tiles as illustrated in the attached screenshot.
+
+Context
+- Baseline: tracked files clean at e97bf13, nine original reference media unchanged and untracked. User requested the tile-hand stats shown in an attached UI mockup; no game-rule change was requested.
+
+Actions
+- Added HandTileDetails to render one row per planet with resource/influence values and labeled, colored biotic/cybernetic/propulsion/warfare badges. Legendary metadata is not treated as a technology skip; planetless systems keep their existing name without invented stats.
+- Used the display in opening and normal hands. Added full stats/skip text to accessible button labels and narrowed the previous broad span CSS rule so nested details render correctly.
+- Preserved existing click-to-inspect behavior, tile selection, board layout, and all backend rules. Documented the hand notation.
+- Prepared a marked local practice fixture through the normal HTTP API; private links remain in ignored .scratch/tile-stat-preview.json.
+
+Files Changed
+- components/hand-tile-details.tsx, components/room-client.tsx, app/globals.css, README.md, PROJECT_STATE.md
+
+Change Scope
+- Intent and actual: display planet stats and tech skips in the tile hand without requiring a click.
+
+Verification
+- Passed production build including TypeScript and git diff whitespace checks.
+- Browser verified Tar'mann 1/1 Biotic, Vega Major 2/1 and Vega Minor 1/2 Propulsion in separate rows; Primor has no false tech-skip badge and planetless tiles show no invented values.
+- No hand or page horizontal overflow at desktop size. Tar'mann still opens its inspector. No new tests were added for this display-only change and backend checks were not rerun.
+
+Open Items
+- Verify the hosted UI after the automatic deployment.

@@ -11,7 +11,7 @@
 
 ## Current State
 
-- Active Objective: Complete. The separate speaker opening hand, delayed normal deal, and speaker-first snake are deployed and verified.
+- Active Objective: Publish inline resources/influence and technology skips in the tile hand.
 - Live App: https://ti4-drafting-app.vercel.app
 - Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
 - Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
@@ -21,7 +21,7 @@
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: None.
+- Active Task: Show each planet's resources/influence and tech skips directly in the tile hand. Baseline e97bf13 tracked clean; nine original reference media files remain unchanged and untracked. Scope: tile-hand UI, verification and deployment only.
 - Last Meaningful Action: Deployed c6a00a9, then verified ten hosted HTTP scenarios and independent hosted seats showing the correct separate opening hand. LOG-0009 records the correction.
 - Files In Flight: None after verification closeout; original nine reference media files remain unchanged and untracked.
 - Verification Status: Passed: 29 unit tests, production build including TypeScript, ten local and ten hosted HTTP scenarios including all 48 normal turns, delayed deal, undo/replay, and full 61-cell map. Browser verified the four-to-six-tile hand transition locally, fresh hosted opening hand colors/privacy, and existing hosted room preservation. Earlier wheel, placement-preview, persistence and storage-privacy checks remain applicable.
