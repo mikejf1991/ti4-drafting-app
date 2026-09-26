@@ -64,3 +64,14 @@ Discussion
 
 Outcome
 - Desktop changes and real Supabase backend passed verification. Push this verified release before importing and testing the hosted app.
+## 2026-09-26 11:55 America/Chicago
+Entry ID: LOG-0007
+
+Request
+- Finish deploying and verifying the TI4 app after the user-enabled Vercel repository access.
+
+Discussion
+- Used Vercel Hobby with existing Supabase storage and sensitive server-only environment variables. Verified public deployment and independent private-seat browser behavior.
+
+Outcome
+- Live at https://ti4-drafting-app.vercel.app; all eight hosted API scenarios and browser preview, placement, persistence, board-fit and wheel checks passed. No paid upgrade or SWPA table changes.

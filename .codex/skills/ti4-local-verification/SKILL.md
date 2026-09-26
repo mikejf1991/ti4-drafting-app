@@ -27,6 +27,8 @@ This is the proven local path for the TI4 Drafting App. Run commands in `C:\User
 
 ## Gotchas
 
+- The verified production app is `https://ti4-drafting-app.vercel.app`, imported from `mikejf1991/ti4-drafting-app` into Vercel team `mikejf1991s-projects` on Hobby. Set the three server-only variables as sensitive values: `TI4_STORAGE=supabase`, `SUPABASE_URL`, and `SUPABASE_SECRET_KEY`. Updates to main deploy through the existing GitHub installation. The hosted API verification passed all eight scenarios; independent browser seats confirmed private previews, cancel/reposition, synchronization after confirmation, reload persistence, and desktop wheel stability. Preserve real player rooms when repeating checks; the verifier creates marked practice rooms.
+
 - `next.config.ts` sets `turbopack.root: process.cwd()` to avoid an unrelated parent lockfile. `lib/store.ts` uses `path.resolve(/* turbopackIgnore: true */ ...)` so runtime room data is never traced into deployment bundles.
 - Keep production secrets out of the client. `SUPABASE_URL` and `SUPABASE_SECRET_KEY` are server environment names; do not put their values in this skill, logs, or frontend variables. Choose `TI4_STORAGE=local` for filesystem tests and `TI4_STORAGE=supabase` only for the real backend check.
 - A passing build or local storage test does **not** prove Supabase provisioning or deployment. Verify those separately against authoritative remote state; the Supabase check above does not prove a Vercel deployment.

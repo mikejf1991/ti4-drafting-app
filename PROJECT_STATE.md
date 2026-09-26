@@ -11,26 +11,26 @@
 
 ## Current State
 
-- Active Objective: Build, verify, and publish the complete TI4 drafting app with minimal user involvement.
-- Open Issues: Vercel import awaits the user's manual GitHub repository-access save. Supabase and the revised desktop UI are verified.
-- Next Recommended Step: Import the latest main branch in Vercel, configure server-only Supabase variables, deploy, and verify the hosted app.
+- Active Objective: Complete. The online TI4 drafting app and requested desktop board changes are deployed and verified.
+- Live App: https://ti4-drafting-app.vercel.app
+- Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
+- Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
+- Open Issues: No deployment blocker. Known initial-release limits: no public room-creation rate limit or host-link recovery/rotation; retain the host return link. Hosts can replace seat invitations.
+- Next Recommended Step: Create a real eight-player room on the live app and distribute each private seat link to its player.
 
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: Resumed by user after sign-in. Finish online deployment and fit the desktop board without mouse-wheel zoom or a separate Creuss inspection area.
-- Last Meaningful Action: Removed wheel zoom and the Creuss inspection panel; fitted all 61 cells within tested desktop viewports. Applied the TI4-only Supabase migration and passed all eight HTTP verification scenarios against real Supabase.
-- Files In Flight: Completed UI, documentation, verification skill, and LOG-0006 checkpoint. Baseline e22d755 tracked clean; the original nine reference media remain unchanged and untracked. Root owns deployment/logs.
-- Verification Status: Passed: 21 unit tests, TypeScript, production build, desktop fit at 1366x720 and 1440x852, wheel stability, and real Supabase-backed full draft/privacy/concurrency checks. SQL permissions: RLS true, anon/authenticated false, server true. Direct REST public key denied 401/42501; server key 200. Hosted checks remain pending.
-- Resume From: Vercel new-project tab and GitHub installation 138968674 are retained. User chose to save the repository permission change themselves; do not click Save. Local preview is http://127.0.0.1:3005; Supabase-backed production check server is http://127.0.0.1:3184. Do not treat local functionality as completion of the online app goal.
+- Active Task: None.
+- Last Meaningful Action: Deployed application commit 8a4a4fa and verified the hosted backend and browser behavior. LOG-0007 records publication closeout.
+- Files In Flight: Publication documentation/log closeout only; original nine reference media files remain unchanged and untracked.
+- Verification Status: Passed: 21 unit tests, TypeScript, production build; real Supabase and hosted API checks (eight scenarios including full 52-placement/61-cell draft); direct REST client access denied; independent hosted browser seats confirmed private preview, cancel/reposition, confirmed synchronization, reload persistence, desktop fit and wheel stability. Homepage, health, JS and CSS return 200.
+- Resume From: Live app above. Local development preview remains http://127.0.0.1:3005. Temporary production verification server on 3184 is no longer needed.
 
 ## Open Loops
 
-- Use C:\Users\polymergroup\Desktop\TI4 Drafting App for every project command. The chat initially opened a different, empty Documents\ChatGPT folder; no project work belongs there.
-- Default selected under user's autonomy instruction: all assignments reveal together after all rankings lock, before map building; rankings stay private.
-- Reuse existing Supabase project with a separate ti4_draft_rooms_v1 table, RLS deny-by-default, server-only key, and no changes to SWPA tables. Secret source remains ignored; never print or commit values.
-- Vercel is signed in under mikejf1991s-projects on Hobby. Import only mikejf1991/ti4-drafting-app; existing SWPA access remains unchanged. No TI4 deployment exists yet.
-- Persisted secrets are only in ignored .env.local. Browser verification fixtures/screenshots are in ignored .scratch; test exports are in Downloads/eight-seat-practice-*.
-- Supabase project nvbxtjmioxidblitnsck now has public.ti4_draft_rooms_v1 with RLS and no client privileges. SWPA tables were not changed. The resumed blocked audit starts fresh if a new impasse occurs.
-- Known initial-release limits: no public room-creation rate limit or host-link rotation/recovery; retain the host return link. Seat invitations can be replaced by the host.
-- Startup baseline for this implementation: tracked files clean at 4141b2c; pre-existing untracked files IMG_4675.heic, IMG_4676.heic, IMG_4677.heic, IMG_4678.heic, IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg, ScreenRecording_08-18-2026 10-30-08_1.mp4. Change scope: complete app implementation, testing, and deployment.
+- Always use C:\Users\polymergroup\Desktop\TI4 Drafting App for project commands. The chat opened a different Documents\ChatGPT folder; no project work belongs there.
+- Supabase credentials remain only in ignored .env.local and sensitive Vercel server environment variables. Never print or commit them. Screenshots/test fixtures remain in ignored .scratch.
+- Production browser verification practice room bf568a5c-5285-4f58-9c30-e8707fc97786 contains one confirmed opening placement. API checks also created marked practice rooms only. Do not reuse test seats for a real draft.
+- User manually enabled only TI4 in the existing Vercel GitHub installation, preserving SWPA access. Dashboard sign-in and repo access are resolved.
+- Desktop board fits the viewport; sidebar scrolls independently, roster starts collapsed, wheel zoom is removed. Creuss has no separate inspection dock but tile 51 remains in exports when selected.

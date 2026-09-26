@@ -201,3 +201,32 @@ Verification
 
 Open Items
 - Push this verified UI release, deploy the configured Vercel import, and verify the hosted app before completing the goal.
+## 2026-09-26 11:55 America/Chicago
+Entry ID: LOG-0007
+
+Request
+- Finish deploying and verifying the TI4 app after the user-enabled Vercel repository access.
+
+Context
+- Baseline: tracked files clean at 8a4a4fa; nine original reference media files remain untracked and untouched. Scope: publish the verified release and record the hosted checks.
+
+Actions
+- Imported the private TI4 repository into Vercel Hobby after the user's manual access change. Preserved the existing SWPA repository grant.
+- Set TI4_STORAGE=supabase plus the existing authorized Supabase URL and secret key as sensitive server variables. Deployed commit 8a4a4fa to https://ti4-drafting-app.vercel.app.
+- Ran the API verifier once on the public deployment and created a separate marked practice room for browser checks. Saved screenshots under ignored .scratch, including hosted-galaxy.png.
+- Updated live deployment documentation and verification skill, reset the temporary browser viewport override, stopped the temporary production test server on 3184, and preserved the user's local dev preview on 3005.
+
+Files Changed
+- README.md, PROJECT_STATE.md, .codex/skills/ti4-local-verification/SKILL.md
+
+Change Scope
+- Intent and actual: publish the completed app, verify the hosted backend and UI, and record an accurate maintenance handoff.
+
+Verification
+- Passed: all eight hosted API scenarios, including private access, CAS, invitation revocation, full 52-placement/61-tile map, and cross-room isolation. Homepage, health, JS and CSS returned HTTP 200.
+- Passed in independent online seats: preview was visible only to the active player; cancel/reposition preserved the original empty space; confirmation synchronized to another seat; reload retained the confirmed tile.
+- Hosted desktop: all 61 cells fit at 1280x720 with no document overflow. Wheel input left scrollY at zero and the board transform unchanged. Earlier local viewport checks passed at 1366x720 and 1440x852.
+- Build/unit/type checks passed for the deployed application in LOG-0006; subsequent changes are documentation only. No real-player or SWPA data was modified.
+
+Open Items
+- None for the requested implementation and deployment. The host must save its return link; host-link recovery and room-creation rate limiting remain initial-release limitations.

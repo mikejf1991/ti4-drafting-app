@@ -1,6 +1,8 @@
 # TI4 Drafting App
 
-An eight-player, asynchronous faction and galaxy draft for an in-person Twilight Imperium Fourth Edition game. Built with Next.js 16, React 19, and TypeScript. The app and Supabase backend are verified; Vercel publication is pending repository access.
+An eight-player, asynchronous faction and galaxy draft for an in-person Twilight Imperium Fourth Edition game. Built with Next.js 16, React 19, and TypeScript.
+
+**Live app:** [ti4-drafting-app.vercel.app](https://ti4-drafting-app.vercel.app). Hosted on Vercel Hobby with persistent Supabase storage. Updates to `main` deploy automatically.
 
 ## Run locally
 
@@ -48,7 +50,7 @@ The API check creates two test rooms and verifies private access, concurrent upd
 
 ## Deploy to Vercel with Supabase
 
-The isolated Supabase migration has been applied and tested against the real backend. Vercel publication is not complete; repository access is being enabled. For a new installation:
+The live installation uses the isolated Supabase table and server-only Vercel variables. Its hosted API and independent browser-seat flows were verified on 2026-09-26. For a new installation:
 
 1. Run [database/001_rooms.sql](database/001_rooms.sql) in the intended Supabase project's SQL editor. It creates the isolated `public.ti4_draft_rooms_v1` table. Row-level security is enabled, `anon` and `authenticated` receive no table access, and only the server's service role can read or write room state. The migration does not alter unrelated app tables.
 2. Set Vercel's server-only environment variables: `TI4_STORAGE=supabase`, `SUPABASE_URL`, and `SUPABASE_SECRET_KEY`. Use the Supabase project's secret/service-role key. Do not add a `NEXT_PUBLIC_` prefix or commit credentials.
