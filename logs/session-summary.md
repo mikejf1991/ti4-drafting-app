@@ -85,4 +85,4 @@ Discussion
 - Use a native non-passive wheel listener scoped to the interactive board, with preventDefault, bounded functional zoom updates, and effect cleanup. Compact landing preview remains unaffected.
 
 Outcome
-- TypeScript and production build passed. Browser checks confirmed board zoom without page scrolling, sidebar scrolling without board zoom, and normal page scrolling outside the board. Publishing via main.
+- TypeScript and production build passed. Local checks confirmed board zoom without page scrolling, independent sidebar scrolling, and page scrolling outside the board. Deployed bef7004; hosted wheel input changed scale 1 to 1.1 with scrollY remaining zero.

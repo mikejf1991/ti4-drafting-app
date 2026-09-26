@@ -11,7 +11,7 @@
 
 ## Current State
 
-- Active Objective: Publish the corrected wheel behavior: board wheel zoom takes priority over page scrolling.
+- Active Objective: Complete. Wheel zoom over the board takes priority over page scrolling, and the correction is deployed and verified.
 - Live App: https://ti4-drafting-app.vercel.app
 - Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
 - Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
@@ -21,9 +21,9 @@
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: Restore wheel zoom while consuming wheel events over the board; preserve sidebar/page scrolling outside the board. Baseline 7643fdb tracked clean, original nine reference media files unchanged and untracked.
-- Last Meaningful Action: Deployed application commit 8a4a4fa and verified the hosted backend and browser behavior. LOG-0007 records publication closeout.
-- Files In Flight: Publication documentation/log closeout only; original nine reference media files remain unchanged and untracked.
+- Active Task: None.
+- Last Meaningful Action: Deployed wheel correction bef7004; hosted browser wheel input changed scale 1 to 1.1 while scrollY remained zero. LOG-0008 records the correction and verification.
+- Files In Flight: None after closeout; original nine reference media files remain unchanged and untracked.
 - Verification Status: Passed: 21 unit tests, TypeScript, production build; real Supabase and hosted API checks (eight scenarios including full 52-placement/61-cell draft); direct REST client access denied; independent hosted browser seats confirmed private preview, cancel/reposition, confirmed synchronization, reload persistence, desktop fit and wheel stability. Homepage, health, JS and CSS return 200.
 - Resume From: Live app above. Local development preview remains http://127.0.0.1:3005. Temporary production verification server on 3184 is no longer needed.
 

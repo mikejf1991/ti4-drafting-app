@@ -254,6 +254,7 @@ Verification
 - Passed: TypeScript, production build, and git diff whitespace checks.
 - Browser: wheel up changed scale 1 to 1.1, wheel down restored 1, with scrollY remaining zero. At an 800px-wide scrollable layout, board input zoomed without document scroll; wheel outside the board scrolled the document. At desktop width, sidebar scrollTop advanced to 42 while board scale stayed 1 and scrollY stayed zero.
 - Existing drafting rules/API behavior were unchanged, so no new unit tests or full draft reruns were needed.
+- Vercel reported deployment completed for bef7004. On the refreshed hosted app, wheel up changed scale 1 to 1.1 while scrollY stayed zero. Saved proof at ignored .scratch/hosted-wheel-zoom.png and reset the board view. No passive-listener warnings appeared in local browser logs.
 
 Open Items
-- Verify the automatically deployed version after pushing main.
+- None for this correction.
