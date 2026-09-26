@@ -11,7 +11,7 @@
 
 ## Current State
 
-- Active Objective: Deploy the corrected speaker opening hand and delayed regular deal; complete hosted verification.
+- Active Objective: Complete. The separate speaker opening hand, delayed normal deal, and speaker-first snake are deployed and verified.
 - Live App: https://ti4-drafting-app.vercel.app
 - Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
 - Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
@@ -21,10 +21,10 @@
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: Correct the speaker opening hand and delayed regular deal, verify all 48 snake turns and undo/legacy-room behavior, then deploy. Baseline 87428bc tracked clean; original nine reference media files unchanged and untracked. Root owns UI/docs/logs; engine agent owns engine/tests; API agent owns HTTP verifier.
-- Last Meaningful Action: Implemented delayed normal dealing, safe undo and legacy-room handling. Passed 29 unit tests, production build, ten local HTTP scenarios and independent two-seat browser transition checks. LOG-0009 records the correction.
-- Files In Flight: Engine, tests, HTTP verifier, room UI and documentation ready to publish; original nine reference media files remain unchanged and untracked.
-- Verification Status: Passed: 21 unit tests, TypeScript, production build; real Supabase and hosted API checks (eight scenarios including full 52-placement/61-cell draft); direct REST client access denied; independent hosted browser seats confirmed private preview, cancel/reposition, confirmed synchronization, reload persistence, desktop fit and wheel stability. Homepage, health, JS and CSS return 200.
+- Active Task: None.
+- Last Meaningful Action: Deployed c6a00a9, then verified ten hosted HTTP scenarios and independent hosted seats showing the correct separate opening hand. LOG-0009 records the correction.
+- Files In Flight: None after verification closeout; original nine reference media files remain unchanged and untracked.
+- Verification Status: Passed: 29 unit tests, production build including TypeScript, ten local and ten hosted HTTP scenarios including all 48 normal turns, delayed deal, undo/replay, and full 61-cell map. Browser verified the four-to-six-tile hand transition locally, fresh hosted opening hand colors/privacy, and existing hosted room preservation. Earlier wheel, placement-preview, persistence and storage-privacy checks remain applicable.
 - Resume From: Live app above. Local development preview remains http://127.0.0.1:3005. Temporary production verification server on 3184 is no longer needed.
 
 ## Open Loops
@@ -33,4 +33,5 @@
 - Supabase credentials remain only in ignored .env.local and sensitive Vercel server environment variables. Never print or commit them. Screenshots/test fixtures remain in ignored .scratch.
 - Production browser verification practice room bf568a5c-5285-4f58-9c30-e8707fc97786 contains one confirmed opening placement. API checks also created marked practice rooms only. Do not reuse test seats for a real draft.
 - User manually enabled only TI4 in the existing Vercel GitHub installation, preserving SWPA access. Dashboard sign-in and repo access are resolved.
+- Speaker opening is a separate 2-blue/2-red hand; regular hands remain undealt until the fourth legal opening placement. Then everyone receives 4-blue/2-red, with speaker-first snake turns and speaker last. Undoing the transition withdraws hands and replay preserves the same deal; legacy rooms migrate without a reset.
 - Desktop board fits the viewport; sidebar scrolls independently and roster starts collapsed. Wheel input over the interactive board zooms and cancels page scrolling, including at zoom limits; wheel input outside the board scrolls normally. Creuss has no separate inspection dock but tile 51 remains in exports when selected.

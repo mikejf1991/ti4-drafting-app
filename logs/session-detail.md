@@ -284,6 +284,8 @@ Verification
 - Passed: strengthened real HTTP verifier on local port 3005, ten scenarios including initial opening colors, no premature hands, all four Mecatol neighbors, fourth-placement deal, identical undo/replay, all 48 snake turns, and full 61-cell map.
 - Browser: speaker saw exactly four opening tiles and another seat saw zero; after the first and third openings the other seat still saw none; after the fourth both seats received six tiles, with the speaker still on turn.
 - Independent review found no privacy, legacy migration, or undo blocker. No production room data was directly edited or reset.
+- Vercel reported c6a00a9 deployed successfully. The hosted HTTP verifier passed all ten scenarios using an expected snake derived independently as clockwise plus reverse, repeated three times. It created marked practice rooms only.
+- Hosted browser: a fresh speaker saw exactly four tiles labeled two blue/two red while another seat saw zero. The earlier practice room retained its confirmed Lisis/Xanhact placement and showed only the three remaining opening tiles. Saved proof at ignored .scratch/hosted-speaker-opening.png.
 
 Open Items
-- Verify the deployed correction through the hosted HTTP interface and browser after pushing main.
+- None for this correction. Refresh existing browser tabs to load the updated instructions and placement-order display.

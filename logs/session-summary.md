@@ -96,4 +96,4 @@ Discussion
 - Corrected premature dealing and the combined ten-tile speaker display. Preserve existing rooms and undo by withdrawing regular hands into the hidden deck and restoring the same deal without rerolls. Placement order display now begins with the speaker.
 
 Outcome
-- 29 unit tests, production build, ten local HTTP scenarios, and two-seat browser transition checks passed. Publishing the verified correction before hosted verification.
+- Deployed c6a00a9. Passed 29 unit tests, production build, ten local and ten hosted HTTP scenarios, two-seat browser transition checks, and hosted fresh/legacy room checks. Verified all 48 normal picks and preserved existing rooms without reset.

@@ -145,12 +145,10 @@ checks.push('Undoing the fourth opening tile withdraws hands; replay preserves t
 host=await view(hostToken);
 const speakerPriorityIndex=host.priority.indexOf(speaker);
 assert.ok(speakerPriorityIndex>=0);
-const regularOrder=Array.from({length:48},(_,turn)=> {
-  const within=turn%16;
-  const offset=within<8?within:15-within;
-  return host.priority[(speakerPriorityIndex+offset)%8];
-});
-const lastSeat=host.priority[(speakerPriorityIndex+7)%8];
+const clockwise=[...host.priority.slice(speakerPriorityIndex),...host.priority.slice(0,speakerPriorityIndex)];
+const oneSnake=[...clockwise,...clockwise.toReversed()];
+const regularOrder=Array.from({length:3},()=>oneSnake).flat();
+const lastSeat=clockwise.at(-1);
 for(const turn of [0,15,16,31,32,47]) assert.equal(regularOrder[turn],speaker);
 for(const turn of [7,8,23,24,39,40]) assert.equal(regularOrder[turn],lastSeat);
 for(let turn=0; turn<48; turn++) {
