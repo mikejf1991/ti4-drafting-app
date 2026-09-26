@@ -77,3 +77,34 @@ Verification
 - Confirmed new entries appended with ID `LOG-0002`.
 - Verified `logs/session-summary.md` and `logs/session-detail.md` syntax preserved.
 - Verification Status: passed documentation consistency review; no executable code changed and application tests are not applicable. Check the staged diff for whitespace before committing and pushing this entry.
+## 2026-09-26 10:42 America/Chicago
+Entry ID: LOG-0003
+
+Request
+- Simplify faction selection to eight ranked factions per player so fallback edge cases disappear.
+
+Context
+- Logged via `scripts/log-turn.sh`.
+- Change Scope: update discovery requirements for eight distinct faction choices and remove fallback allocation.
+- Worktree Baseline: tracked files clean; pre-existing untracked files were IMG_4675.heic, IMG_4676.heic, IMG_4677.heic, IMG_4678.heic, IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg, and ScreenRecording_08-18-2026 10-30-08_1.mp4. All remain unchanged.
+- Actual Change Scope: updated README, PROJECT_STATE, DRAFT_RULES, and paired logs only; no application implementation.
+- Confirmed rule: eight unique eligible preferences guarantee an assignment because no more than seven factions have been claimed. Keep the 24-faction pool fixed and faction assignments unique. Removed free picks, fallback rankings, and allocation pauses.
+- Still open: when opponents' final faction assignments become public. The user did not change that decision in this turn.
+- Verification Status: passed logical review and consistency review of the three current requirements documents. No executable code changed; application tests are not applicable.
+
+Actions
+- Added matching entries to `logs/session-summary.md` and `logs/session-detail.md`.
+- Optionally staged and committed using this helper when `--commit` is used.
+
+Files Changed
+- README.md
+- PROJECT_STATE.md
+- docs/DRAFT_RULES.md
+
+Change Scope
+- Intent: add or update workflow logging artifacts for this task.
+- Actual: automated log entry creation and optional git commit support.
+
+Verification
+- Confirmed new entries appended with ID `LOG-0003`.
+- Verified `logs/session-summary.md` and `logs/session-detail.md` syntax preserved.

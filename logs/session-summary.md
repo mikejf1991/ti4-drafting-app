@@ -20,3 +20,14 @@ Discussion
 
 Outcome
 - Updated discovery documents only. Two privacy choices remain: blind fallback versus visible availability, and faction reveal timing. No application implementation or service changes.
+## 2026-09-26 10:42 America/Chicago
+Entry ID: LOG-0003
+
+Request
+- Simplify faction selection to eight ranked factions per player so fallback edge cases disappear.
+
+Discussion
+- Each player ranks eight distinct eligible factions from the fixed 24-faction pool. At most seven factions can be assigned before the last player, guaranteeing at least one available ranked choice. Remove free picks, expanded fallback rankings, and mid-allocation pauses. Keep random priority and hidden choices; final reveal timing remains unconfirmed.
+
+Outcome
+- Updated README, draft rules, and project state. Documentation-only change; no app implementation. Checked the assignment guarantee and retained the separate reveal-timing question.
