@@ -19,7 +19,7 @@
 
 - Current Branch: main
 - Active Task: Requirements discussion; implementation is not authorized yet.
-- Last Meaningful Action: Created private GitHub repository, installed startup files, inspected all eight reference images, and recorded the draft rules.
+- Last Meaningful Action: Committed and pushed startup files and discovery notes to private GitHub; inspected all eight reference images and recorded the draft rules.
 - Files In Flight: No application work; nine original reference media files remain local and untracked.
 - Verification Status: Correct Desktop directory and origin verified; all tile images 1-80 are accessible, including conditional Ghosts tile 51. No application code exists.
 - Resume From: Resolve the open rule choices with the user, then obtain their instruction to start implementation.

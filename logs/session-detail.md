@@ -15,9 +15,10 @@ Actions
 - Ran the bootstrap skill helper and created private mikejf1991/ti4-drafting-app after the user selected that name.
 - Inspected all eight reference images; verified standard speaker selection against the official PoK Living Rules Reference and checked tile 51 accessibility.
 - Recorded agreed requirements, photographed map rules, asset ranges, and open decisions in docs/DRAFT_RULES.md. Application implementation remains on hold pending discussion.
-- Prepared a focused initial commit of bootstrap and discovery files. Push the new main branch to origin and verify afterward.
+- Committed and pushed bootstrap and discovery files to origin/main. Added a shell-script LF rule after Git warned that Windows checkout would otherwise convert the WSL helper to CRLF.
 
 Files Changed
+- .gitattributes
 - .gitignore
 - AGENT.MD
 - PROJECT_STATE.md
@@ -36,6 +37,7 @@ Verification
 - Verification Status: passed for bootstrap and discovery; application tests are not applicable because there is no implementation.
 - GitHub CLI confirmed the remote is private; local root, main branch, and origin are correct.
 - WSL bash syntax check passed for scripts/log-turn.sh; copied agent and logger hashes match skill assets.
+- Initial bootstrap commit 8f35769 pushed successfully. A follow-up in this same entry pins shell-script line endings and refreshes closeout state.
 - Tile 51 endpoint returned HTTP 200 and image/webp. All other requested endpoints were checked in the earlier discovery turn.
 
 Open Items
