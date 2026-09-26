@@ -45,3 +45,35 @@ Open Items
 - Decide whether exhausted faction rankings pause allocation before lower priorities or resolve after automatic assignments.
 - Confirm the proposed 24 base-game plus PoK factions and any exclusions/additions.
 - Supabase is chosen but not provisioned. Frontend hosting is undecided. MP4 was not reviewed; photographed rules were sufficient for this discussion.
+## 2026-09-26 10:38 America/Chicago
+Entry ID: LOG-0002
+
+Request
+- Confirm priority-preserving faction fallback, conceal choices to prevent counter-picking, independent random speaker, all 24 factions, and identify remaining decisions.
+
+Context
+- Logged via `scripts/log-turn.sh`.
+- Worktree Baseline: tracked files clean; nine pre-existing user media files remain untracked and untouched.
+- Pre-existing Dirty Files: IMG_4675.heic, IMG_4676.heic, IMG_4677.heic, IMG_4678.heic, IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg, ScreenRecording_08-18-2026 10-30-08_1.mp4.
+- Confirmed: pause faction allocation for any exhausted priority before lower assignments; all 24 factions; independently random speaker; no revelation of others' choices during faction selection.
+- Open: visible remaining-faction choices leak the taken set. Proposed private expanded ranking and simultaneous final reveal before map building both need user agreement.
+
+Actions
+- Added matching entries to `logs/session-summary.md` and `logs/session-detail.md`.
+- Optionally staged and committed using this helper when `--commit` is used.
+
+Files Changed
+- README.md
+- PROJECT_STATE.md
+- docs/DRAFT_RULES.md
+
+Change Scope
+- Intent: add or update workflow logging artifacts for this task.
+- Actual: automated log entry creation and optional git commit support.
+- Task Change Scope: update requirements and handoff state for the user's decisions; no application work.
+- Actual Task Scope: updated README.md, PROJECT_STATE.md, docs/DRAFT_RULES.md, and paired logs. Removed resolved speaker/pool/fallback timing questions and recorded two remaining privacy choices.
+
+Verification
+- Confirmed new entries appended with ID `LOG-0002`.
+- Verified `logs/session-summary.md` and `logs/session-detail.md` syntax preserved.
+- Verification Status: passed documentation consistency review; no executable code changed and application tests are not applicable. Check the staged diff for whitespace before committing and pushing this entry.

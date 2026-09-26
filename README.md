@@ -14,8 +14,10 @@ Private repository: https://github.com/mikejf1991/ti4-drafting-app
 
 - Eight players initially, using the full board without hyperlanes.
 - Real hexagonal system artwork, a shared galaxy, and private player hands.
-- Five ranked faction preferences per player, with randomized allocation priority.
+- Five ranked faction preferences per player from all 24 base-game and PoK factions, with randomized allocation priority and hidden faction choices during selection.
+- Allocation pauses for an exhausted player's free pick before lower priorities continue; the exact private fallback interface is under discussion.
 - Clockwise seating follows faction priority.
+- Speaker is randomized independently; map placement follows the standard speaker-first snake.
 - One private link per seat; desktop usability takes priority.
 - Private tile/location preview followed by explicit confirmation.
 - Persistent async play with updates for players who are online together.

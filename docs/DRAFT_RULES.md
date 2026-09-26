@@ -19,16 +19,19 @@ Status: discussion only, 2026-09-26. Confirmed user decisions and photographed r
 1. Every player submits five factions ranked by preference. Submissions are asynchronous and need not arrive in priority order.
 2. The system randomly assigns a priority order.
 3. In priority order, each player receives their highest-ranked unclaimed faction.
-4. A player whose entire list is unavailable may freely choose from remaining factions. With five distinct choices, only priorities 6-8 can encounter this.
+4. A player whose entire list is unavailable may freely choose from remaining factions. Pause allocation at that player's priority until their choice resolves, then continue with lower priorities. Apply this to any exhausted player, including multiple players among priorities 6-8; it is not limited to #6.
 5. Clockwise seating follows this priority order.
-6. Factions must be known before map placement so players can build with their faction in mind.
+6. Each player's own faction must be known before map placement so they can build with their faction in mind.
+7. Use all 24 base-game plus Prophecy of Kings factions.
+8. Do not reveal other players' faction choices during faction selection. The user's purpose is to prevent counter-picking. Rankings and provisional assignments must remain private; final reveal timing is still to be clarified.
 
 Proposed details, not yet approved:
 
-- Require five distinct eligible factions, keep rankings private, and allow editing until all eight players finalize.
+- Require five distinct eligible factions and allow editing until all eight players finalize. The privacy requirement itself is confirmed above.
 - Lock all lists before drawing priority; persist that draw and do not reroll on refresh.
-- If a player's list is exhausted, pause allocation at that priority for their free pick before assigning lower priorities. Alternative: finish automatic assignments first, then offer the remaining factions to unmatched players. The user must choose this policy.
-- Default faction pool: the 24 base-game plus Prophecy of Kings factions implied by the supplied home tiles. Confirm bans or additional factions before implementation.
+- For an exhausted player, a visible list of remaining factions leaks which factions were taken, even when assignments to specific players are hidden. To reduce counter-picking information, propose a private expanded ranking that shows no availability or prior assignments; allocate the highest available choice and then resume lower priorities. This changes the fallback interaction and needs user agreement.
+- Propose revealing all final assignments together once every faction is locked, before map placement. Alternatively, show each player only their own faction during placement and conceal opponent faction/home artwork until the map is complete. Reveal timing is undecided.
+- Keep rankings and provisional assignments hidden in the host's ordinary app interface as well. Private seat links and server-side checks should enforce this; a backend administrator is outside the app-level secrecy model.
 
 ## Galaxy build: transcribed from user photographs
 
@@ -47,11 +50,11 @@ Sources: IMG_4675.heic (board), IMG_4676.heic (separate/deal), IMG_4677.heic (pl
 
 The generator screenshots (IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg) show access to options, PoK tiles, and the extra-tile panel. They are asset-access references, not a request to reproduce every generator setting. The MP4 is present but has not been reviewed; the screenshots provide the requested rules.
 
-## Speaker: verified standard and proposal
+## Speaker: confirmed
 
 The official Complete Setup randomly selects the initial speaker. Standard map placement starts at the speaker and moves clockwise before reversing.
 
-Recommendation awaiting approval: choose speaker independently at random after faction allocation. Keep clockwise seating in faction-priority order. This means faction priority number 1 does not automatically receive speaker or necessarily place the first system.
+User approved choosing speaker independently at random after faction allocation, with standard speaker-first map placement. Keep clockwise seating in faction-priority order. Faction priority number 1 does not automatically receive speaker or necessarily place the first system.
 
 Official reference: https://images-cdn.fantasyflightgames.com/filer_public/51/55/51552c7f-c05c-445b-84bf-4b073456d008/ti10_pok_living_rules_reference_20_web.pdf
 
@@ -70,8 +73,7 @@ Official reference: https://images-cdn.fantasyflightgames.com/filer_public/51/55
 
 ## Questions to resolve next
 
-1. Accept independently random speaker and the standard speaker-first map snake?
-2. On exhausted faction rankings, pause before lower priorities or complete automatic assignments before free picks?
-3. Use all 24 base-game plus PoK factions, or are there exclusions/additions?
+1. For an exhausted faction list, accept a private expanded ranking without availability information, or allow a remaining-factions picker that reveals the already-taken faction set?
+2. Reveal all factions together before map placement (proposed), or keep opponent factions hidden until map completion?
 
 Host recovery controls, finalized map export, the exact treatment of placement exceptions, and hosting details can be settled during design. No app implementation has begun.

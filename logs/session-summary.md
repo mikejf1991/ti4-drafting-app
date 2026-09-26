@@ -9,3 +9,14 @@ Discussion
 
 Outcome
 - Created the private GitHub remote and startup files; documented confirmed rules and pending decisions. Reviewed all eight images, verified tile 51 and official speaker rule, and passed Bash syntax verification. No app implementation or deployment. Initial bootstrap commit and push follow.
+## 2026-09-26 10:38 America/Chicago
+Entry ID: LOG-0002
+
+Request
+- Confirm priority-preserving faction fallback, conceal choices to prevent counter-picking, independent random speaker, all 24 factions, and identify remaining decisions.
+
+Discussion
+- Accepted pause at any exhausted priority before lower assignments, independent random speaker, and all 24 base-game/PoK factions. Choices must remain hidden during selection. A remaining-faction list exposes the taken set; propose private expanded fallback rankings. Final reveal timing remains open: simultaneous reveal before map placement is proposed, not yet approved.
+
+Outcome
+- Updated discovery documents only. Two privacy choices remain: blind fallback versus visible availability, and faction reveal timing. No application implementation or service changes.
