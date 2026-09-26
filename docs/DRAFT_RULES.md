@@ -38,9 +38,11 @@ Sources: IMG_4675.heic (board), IMG_4676.heic (separate/deal), IMG_4677.heic (pl
 
 - Mecatol Rex is fixed at the center; eight home systems use the positions in the photographed eight-player diagram.
 - Separate blue- and red-backed system tiles and shuffle each pile facedown.
-- Deal each player four blue and two red tiles: 48 dealt tiles total.
-- Before normal placement, the speaker draws two extra blue and two extra red tiles from the unused tiles and places these four adjacent to Mecatol, one at a time in their chosen order, following normal placement rules.
+- User correction: deal only the speaker a separate opening hand of two blue and two red tiles. No player, including the speaker, receives their regular hand yet.
+- The speaker places all four opening tiles adjacent to Mecatol, one at a time in their chosen order, following normal placement rules. Only this opening hand is available when checking legal alternatives.
+- After the fourth opening placement is confirmed, deal each player four blue and two red tiles: 48 dealt tiles total. The speaker immediately starts normal placement with one tile from this new six-tile hand.
 - Starting with the speaker, placement proceeds clockwise. The final player places twice, then direction reverses. At the other end, the speaker places twice and direction reverses again. Continue this snake until all dealt tiles are placed.
+- Numbering normal draft turns 1–48, the speaker acts on turns 1, 16, 17, 32, 33, and 48. The last clockwise player acts on turns 8, 9, 24, 25, 40, and 41. Every player places six regular tiles; the speaker also placed the four opening tiles.
 - Complete each ring before starting the next ring.
 - Anomaly systems cannot be adjacent unless there is no other option.
 - Systems with matching wormhole types cannot be adjacent unless there is no other option.
@@ -72,10 +74,10 @@ Official reference: https://images-cdn.fantasyflightgames.com/filer_public/51/55
 
 ## Operational defaults
 
-- Host can replace a lost private invitation and undo the latest placement. Every confirmed placement and undo appears in the activity history.
+- Host can replace a lost private invitation and undo the latest placement. Undoing the fourth opening placement withdraws all regular hands until it is confirmed again, then restores the same deal. Every confirmed placement and undo appears in the activity history.
 - Practice rooms allow automatic sample rankings and opening all eight independent seats. Real rooms cannot use this shortcut.
 - Completed maps export as board PNG, printable tile-number SVG, and public map JSON.
 - Placement exceptions apply only if no tile/space pair in the current player's active pool is legal on the current ring.
 - Server-side validation and revision-based atomic updates protect turns and simultaneous actions. Each client receives only its own rankings and hand; speaker opening tiles are visible only to the speaker.
-- Vercel is the deployment target; production setup is pending. `database/001_rooms.sql` creates the isolated `public.ti4_draft_rooms_v1` table with RLS and no `anon` or `authenticated` table access. Only server routes use the Supabase secret key.
+- The live app is https://ti4-drafting-app.vercel.app on Vercel Hobby. `database/001_rooms.sql` creates the isolated `public.ti4_draft_rooms_v1` table with RLS and no `anon` or `authenticated` table access. Only server routes use the Supabase secret key.
 - Local file-backed storage is available only for explicit local development (`TI4_STORAGE=local`) and is disabled on Vercel. Environment secrets and local room data must remain outside Git.

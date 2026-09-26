@@ -16,7 +16,9 @@ export interface RoomState {
   schemaVersion: 1; id: string; title: string; createdAt: string; updatedAt: string; revision: number;
   practice: boolean; phase: Phase; hostTokenHash: string; players: PlayerState[];
   priority: number[]; speaker: number | null; board: Record<string, number>;
-  speakerPool: number[]; unusedTiles: number[]; placements: Placement[]; history: HistoryEvent[];
+  speakerPool: number[];
+  /** Server-only undealt deck during the opening; two leftover blue tiles after the normal deal. */
+  unusedTiles: number[]; placements: Placement[]; history: HistoryEvent[];
 }
 export type Actor = { kind: 'host' } | { kind: 'seat'; seatId: number };
 export type RoomAction =

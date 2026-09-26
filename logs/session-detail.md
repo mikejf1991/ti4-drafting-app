@@ -258,3 +258,32 @@ Verification
 
 Open Items
 - None for this correction.
+## 2026-09-26 17:18 America/Chicago
+Entry ID: LOG-0009
+
+Request
+- Give only the speaker a separate 2-blue/2-red opening hand, deal 4-blue/2-red regular hands only after all four opening tiles, and follow speaker-first snake turns with double turns at both ends.
+
+Context
+- Baseline: tracked files clean at 87428bc; original nine reference media files unchanged and untracked. User clarified a separate opening deal before any regular player hand exists.
+
+Actions
+- Changed faction resolution to deal only a two-blue/two-red speaker pool and retain the remaining deck server-side. The fourth confirmed opening placement deals all eight four-blue/two-red normal hands and starts the regular snake with the speaker.
+- Hid premature regular hands in legacy opening-room projections immediately; the next successful game action reclaims them into the hidden deck while preserving the eventual per-player allocation. Existing normal-placement and complete rooms retain their progress.
+- Undoing the fourth opening move withdraws all regular hands; replay restores the same deal without rerolling. Opening legal alternatives use only the speaker pool; all normal ring and adjacency rules remain active.
+- Separated the UI opening hand, added color labels/waiting text, and displayed placement order clockwise from the speaker. Updated rules/README and added exhaustive snake, privacy, undo, transition and legacy regressions.
+
+Files Changed
+- lib/engine.ts, lib/types.ts, tests/engine.test.ts, scripts/verify-api.mjs, components/room-client.tsx, README.md, docs/DRAFT_RULES.md, PROJECT_STATE.md
+
+Change Scope
+- Intent and actual: correct opening deal timing and visibility, preserve recovery and existing rooms, and verify all 48 regular turns.
+
+Verification
+- Passed: all 29 unit tests, production build including TypeScript, and whitespace checks.
+- Passed: strengthened real HTTP verifier on local port 3005, ten scenarios including initial opening colors, no premature hands, all four Mecatol neighbors, fourth-placement deal, identical undo/replay, all 48 snake turns, and full 61-cell map.
+- Browser: speaker saw exactly four opening tiles and another seat saw zero; after the first and third openings the other seat still saw none; after the fourth both seats received six tiles, with the speaker still on turn.
+- Independent review found no privacy, legacy migration, or undo blocker. No production room data was directly edited or reset.
+
+Open Items
+- Verify the deployed correction through the hosted HTTP interface and browser after pushing main.

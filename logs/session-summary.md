@@ -86,3 +86,14 @@ Discussion
 
 Outcome
 - TypeScript and production build passed. Local checks confirmed board zoom without page scrolling, independent sidebar scrolling, and page scrolling outside the board. Deployed bef7004; hosted wheel input changed scale 1 to 1.1 with scrollY remaining zero.
+## 2026-09-26 17:18 America/Chicago
+Entry ID: LOG-0009
+
+Request
+- Give only the speaker a separate 2-blue/2-red opening hand, deal 4-blue/2-red regular hands only after all four opening tiles, and follow speaker-first snake turns with double turns at both ends.
+
+Discussion
+- Corrected premature dealing and the combined ten-tile speaker display. Preserve existing rooms and undo by withdrawing regular hands into the hidden deck and restoring the same deal without rerolls. Placement order display now begins with the speaker.
+
+Outcome
+- 29 unit tests, production build, ten local HTTP scenarios, and two-seat browser transition checks passed. Publishing the verified correction before hosted verification.

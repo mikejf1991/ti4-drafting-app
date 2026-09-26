@@ -23,6 +23,16 @@ function placeFirst(state: RoomState) {
   expect(move).toBeDefined();
   return applyAction(state, { kind: 'seat', seatId }, { type: 'place', tileId: move.tileId, cellId: move.cellId });
 }
+// Persisted pre-correction shape: all eight six-tile hands existed during the opening.
+function legacyOpening(placed: number) {
+  let state = ready(27);
+  for (let i = 0; i < placed; i++) state = placeFirst(state);
+  const blue = state.unusedTiles.filter(id => BLUE_TILES.includes(id));
+  const red = state.unusedTiles.filter(id => RED_TILES.includes(id));
+  for (const player of state.players) player.hand = [...blue.splice(0, 4), ...red.splice(0, 2)];
+  state.unusedTiles = [...blue, ...red];
+  return state;
+}
 
 describe('fixed eight-player catalog and geometry', () => {
   it('has 61 unique cells, eight prescribed homes and a flat-top image layout', () => {
@@ -56,11 +66,12 @@ describe('faction locking, allocation and privacy', () => {
     expect(state.priority.map(id => state.players[id].factionId)).toEqual(rank);
     expect(HOME_CELLS.map(cell => state.board[cell.id])).toEqual(rank);
     expect(state.phase).toBe('speaker');
-    expect(state.players.every(player => player.hand.filter(id => BLUE_TILES.includes(id)).length === 4 && player.hand.filter(id => RED_TILES.includes(id)).length === 2)).toBe(true);
+    expect(state.players.every(player => player.hand.length === 0)).toBe(true);
     expect(state.speakerPool.filter(id => BLUE_TILES.includes(id))).toHaveLength(2);
     expect(state.speakerPool.filter(id => RED_TILES.includes(id))).toHaveLength(2);
-    expect(state.unusedTiles).toHaveLength(2);
-    expect(state.unusedTiles.every(id => BLUE_TILES.includes(id))).toBe(true);
+    expect(state.unusedTiles).toHaveLength(50);
+    expect(state.unusedTiles.filter(id => BLUE_TILES.includes(id))).toHaveLength(34);
+    expect(state.unusedTiles.filter(id => RED_TILES.includes(id))).toHaveLength(16);
     expect(new Set([...state.players.flatMap(player => player.hand), ...state.speakerPool, ...state.unusedTiles]).size).toBe(54);
   });
   it('draws speaker separately instead of assigning faction priority one', () => {
@@ -93,7 +104,8 @@ describe('faction locking, allocation and privacy', () => {
     expect(() => applyAction(room(), { kind: 'seat', seatId: 0 }, { type: 'rank', ranking: [...rank.slice(0, 7), 51] })).toThrow(/eligible/);
   });
   it('whitelists all public responses and isolates the returned objects', () => {
-    const state = ready();
+    let state = ready();
+    for (let i = 0; i < 4; i++) state = placeFirst(state);
     const host = getRoomView(state, { kind: 'host' });
     expect(host.myHand).toEqual([]);
     expect(host.myRanking).toBeNull();
@@ -126,6 +138,103 @@ describe('faction locking, allocation and privacy', () => {
 });
 
 describe('placement and recovery', () => {
+  it.each([0, 1, 2, 3])('hides legacy opening hands immediately and preserves their deal after %i placed opening tiles', placed => {
+    let state = legacyOpening(placed);
+    const original = structuredClone(state);
+    const originalHands = state.players.map(player => [...player.hand]);
+    const originalUnused = [...state.unusedTiles];
+    const expectedCounts = state.players.map(player => player.id === state.speaker ? 4 - placed : 0);
+    expect(getRoomView(state, { kind: 'host' }).players.map(player => player.handCount)).toEqual(expectedCounts);
+    for (const player of state.players) {
+      const view = getRoomView(state, { kind: 'seat', seatId: player.id });
+      expect(view.myHand).toEqual([]);
+      expect(view.players.map(player => player.handCount)).toEqual(expectedCounts);
+      expect(view.speakerPool).toEqual(player.id === state.speaker ? state.speakerPool : []);
+    }
+    expect(state).toEqual(original); // Reads must not mutate persisted state.
+    const first = getLegalMoves(state, state.speaker!)[0];
+    expect(() => applyAction(state, { kind: 'host' }, { type: 'place', tileId: first.tileId, cellId: first.cellId })).toThrow(/private link/);
+    expect(state).toEqual(original); // A rejected action must not persist the migration.
+    for (let i = placed; i < 4; i++) {
+      const before = structuredClone(state);
+      const move = getLegalMoves(state, state.speaker!)[0];
+      state = applyAction(state, { kind: 'seat', seatId: state.speaker! }, { type: 'place', tileId: move.tileId, cellId: move.cellId }, () => { throw new Error('Legacy migration must not reroll.'); });
+      expect(state.schemaVersion).toBe(1);
+      expect(state.revision).toBe(before.revision + 1);
+      expect(state.priority).toEqual(original.priority);
+      expect(state.speaker).toBe(original.speaker);
+      expect(state.board).toEqual({ ...before.board, [move.cellId]: move.tileId });
+      expect(state.placements.slice(0, -1)).toEqual(before.placements);
+      if (i < 3) {
+        expect(state.phase).toBe('speaker');
+        expect(state.players.flatMap(player => player.hand)).toEqual([]);
+        expect(state.unusedTiles).toHaveLength(50);
+      }
+    }
+    expect(state.phase).toBe('placement');
+    expect(state.players.map(player => player.hand)).toEqual(originalHands);
+    expect(state.unusedTiles).toEqual(originalUnused);
+  });
+  it('migrates an old opening room when the host undoes an opening placement', () => {
+    const state = legacyOpening(3);
+    const originalHands = state.players.map(player => [...player.hand]);
+    const last = state.placements.at(-1)!;
+    let undone = applyAction(state, { kind: 'host' }, { type: 'undo' });
+    expect(undone.placements).toHaveLength(2);
+    expect(undone.board[last.cellId]).toBeUndefined();
+    expect(undone.speakerPool).toContain(last.tileId);
+    expect(undone.players.flatMap(player => player.hand)).toEqual([]);
+    expect(undone.unusedTiles).toHaveLength(50);
+    undone = placeFirst(placeFirst(undone));
+    expect(undone.players.map(player => player.hand)).toEqual(originalHands);
+  });
+  it('withdraws every normal hand when undoing the fourth opening and repeats exactly the same deal', () => {
+    let state = ready();
+    for (let i = 0; i < 3; i++) state = placeFirst(state);
+    const before = structuredClone(state);
+    const move = getLegalMoves(state, state.speaker!)[0];
+    const action = { type: 'place' as const, tileId: move.tileId, cellId: move.cellId };
+    const dealt = applyAction(state, { kind: 'seat', seatId: state.speaker! }, action);
+    for (let retry = 0; retry < 3; retry++) {
+      const undone = applyAction(retry === 0 ? dealt : state, { kind: 'host' }, { type: 'undo' });
+      expect(undone.phase).toBe('speaker');
+      expect(undone.board).toEqual(before.board);
+      expect(undone.placements).toEqual(before.placements);
+      expect(undone.players.flatMap(player => player.hand)).toEqual([]);
+      expect(undone.unusedTiles).toEqual(before.unusedTiles);
+      for (const player of undone.players) {
+        const view = getRoomView(undone, { kind: 'seat', seatId: player.id });
+        expect(view.myHand).toEqual([]);
+        expect(view.players.map(player => player.handCount)).toEqual(undone.players.map(other => other.id === undone.speaker ? 1 : 0));
+      }
+      state = applyAction(undone, { kind: 'seat', seatId: undone.speaker! }, action, () => { throw new Error('Replay must not reroll.'); });
+      expect(state.phase).toBe('placement');
+      expect(state.players.map(player => player.hand)).toEqual(dealt.players.map(player => player.hand));
+      expect(state.unusedTiles).toEqual(dealt.unusedTiles);
+      expect(getCurrentPlayer(state)).toBe(state.speaker);
+    }
+  });
+  it('does not migrate or redeal rooms already in normal placement or complete', () => {
+    let state = legacyOpening(3);
+    state = placeFirst(state);
+    for (let i = 0; i < 48; i++) {
+      const before = structuredClone(state);
+      const current = getCurrentPlayer(state)!;
+      for (const player of state.players) expect(getRoomView(state, { kind: 'seat', seatId: player.id }).myHand).toEqual(player.hand);
+      expect(state).toEqual(before);
+      const move = getLegalMoves(state, current)[0];
+      state = applyAction(state, { kind: 'seat', seatId: current }, { type: 'place', tileId: move.tileId, cellId: move.cellId }, () => { throw new Error('Normal placement must not reroll.'); });
+      expect(state.unusedTiles).toEqual(before.unusedTiles);
+      expect(state.board).toEqual({ ...before.board, [move.cellId]: move.tileId });
+      for (const player of state.players) expect(player.hand).toEqual(before.players[player.id].hand.filter(id => player.id !== current || id !== move.tileId));
+    }
+    const complete = structuredClone(state);
+    const view = getRoomView(state, { kind: 'host' });
+    expect(view.phase).toBe('complete');
+    expect(view.board).toEqual(complete.board);
+    expect(view.currentPlayer).toBeNull();
+    expect(state).toEqual(complete);
+  });
   it('rejects wrong turns, host placement, occupied cells, and outer rings without mutating state', () => {
     const state = ready();
     const before = structuredClone(state);
@@ -136,16 +245,56 @@ describe('placement and recovery', () => {
     expect(() => applyAction(state, { kind: 'seat', seatId: state.speaker! }, { type: 'place', tileId, cellId: '0,0' })).toThrow(/empty/);
     expect(state).toEqual(before);
   });
-  it('places four seed tiles before touching a hand and double-turns at both snake ends', () => {
+  it('deals normal hands only after all four opening placements, preserving the hidden deck order', () => {
+    let state = ready();
+    const deck = [...state.unusedTiles];
+    const expectedBlue = deck.filter(id => BLUE_TILES.includes(id));
+    const expectedRed = deck.filter(id => RED_TILES.includes(id));
+    for (let i = 0; i < 4; i++) {
+      expect(state.phase).toBe('speaker');
+      expect(state.players.every(player => player.hand.length === 0)).toBe(true);
+      expect(state.unusedTiles).toEqual(deck);
+      const host = getRoomView(state, { kind: 'host' });
+      expect(host.players.map(player => player.handCount)).toEqual(state.players.map(player => player.id === state.speaker ? 4 - i : 0));
+      expect(host.myHand).toEqual([]);
+      expect(host.speakerPool).toEqual([]);
+      for (const player of state.players) {
+        const view = getRoomView(state, { kind: 'seat', seatId: player.id });
+        expect(view.myHand).toEqual([]);
+        expect(view.speakerPool).toEqual(player.id === state.speaker ? state.speakerPool : []);
+        expect(JSON.stringify(view)).not.toContain('unusedTiles');
+      }
+      const move = getLegalMoves(state, state.speaker!)[0];
+      expect(CELLS.find(cell => cell.id === move.cellId)?.ring).toBe(1);
+      expect(() => applyAction(state, { kind: 'seat', seatId: state.speaker! }, { type: 'place', tileId: deck[0], cellId: move.cellId })).toThrow(/active tile pool/);
+      state = applyAction(state, { kind: 'seat', seatId: state.speaker! }, { type: 'place', tileId: move.tileId, cellId: move.cellId }, () => { throw new Error('Opening placement must not reroll the deck.'); });
+    }
+    expect(state.phase).toBe('placement');
+    expect(getCurrentPlayer(state)).toBe(state.speaker);
+    expect(state.speakerPool).toEqual([]);
+    for (const player of state.players) {
+      expect(player.hand).toEqual([...expectedBlue.splice(0, 4), ...expectedRed.splice(0, 2)]);
+      expect(getRoomView(state, { kind: 'seat', seatId: player.id }).myHand).toEqual(player.hand);
+    }
+    expect(state.unusedTiles).toEqual(expectedBlue);
+    expect(state.unusedTiles).toHaveLength(2);
+    expect(expectedRed).toEqual([]);
+  });
+  it('follows all 48 snake turns, including both double-turn ends and the final speaker turn', () => {
     let state = ready();
     const speaker = state.speaker!;
     for (let i = 0; i < 4; i++) { expect(getCurrentPlayer(state)).toBe(speaker); state = placeFirst(state); }
     expect(state.phase).toBe('placement');
     expect(state.players.every(player => player.hand.length === 6)).toBe(true);
     const order: number[] = [];
-    for (let i = 0; i < 17; i++) { order.push(getCurrentPlayer(state)!); state = placeFirst(state); }
+    for (let i = 0; i < 48; i++) { order.push(getCurrentPlayer(state)!); state = placeFirst(state); }
     const clockwise = Array.from({ length: 8 }, (_, i) => state.priority[(state.priority.indexOf(speaker) + i) % 8]);
-    expect(order).toEqual([...clockwise, ...clockwise.toReversed(), speaker]);
+    expect(order).toEqual(Array.from({ length: 3 }, () => [...clockwise, ...clockwise.toReversed()]).flat());
+    expect(order.flatMap((id, index) => id === speaker ? [index] : [])).toEqual([0, 15, 16, 31, 32, 47]);
+    expect(order.flatMap((id, index) => id === clockwise[7] ? [index] : [])).toEqual([7, 8, 23, 24, 39, 40]);
+    for (const player of state.players) expect(order.filter(id => id === player.id)).toHaveLength(6);
+    expect(state.phase).toBe('complete');
+    expect(getCurrentPlayer(state)).toBeNull();
   });
   it('completes 52 placements / 61 cells across many randomized drafts without a deadlock', () => {
     for (let seed = 1; seed <= 20; seed++) {

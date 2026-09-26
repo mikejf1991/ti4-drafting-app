@@ -50,14 +50,30 @@ function resolveFactions(state: RoomState, random: Random) {
   state.speaker = Math.floor(random() * 8);
   const blue = shuffled(BLUE_TILES, random);
   const red = shuffled(RED_TILES, random);
-  for (const player of state.players) player.hand = [...blue.splice(0, 4), ...red.splice(0, 2)];
   state.speakerPool = [...blue.splice(0, 2), ...red.splice(0, 2)];
+  // The remaining shuffled deck stays server-only until all four opening tiles are placed.
   state.unusedTiles = [...blue, ...red];
   HOME_CELLS.forEach((cell, index) => {
     state.board[cell.id] = FACTIONS.find(faction => faction.id === state.players[state.priority[index]].factionId)!.homeTile;
   });
   state.phase = 'speaker';
   event(state, `All factions revealed. ${state.players[state.speaker].name} is speaker and places four opening systems.`);
+}
+
+/** Preserve each seat's deal when undoing the opening transition or reading an older room. */
+function reclaimHands(state: RoomState) {
+  const deck = [...state.players.flatMap(player => player.hand), ...state.unusedTiles];
+  state.unusedTiles = [...deck.filter(id => TILES[id].type === 'blue'), ...deck.filter(id => TILES[id].type === 'red')];
+  for (const player of state.players) player.hand = [];
+}
+
+function dealHands(state: RoomState) {
+  // Do not shuffle here: repeating the fourth opening placement must repeat the same deal.
+  const blue = state.unusedTiles.filter(id => TILES[id].type === 'blue');
+  const red = state.unusedTiles.filter(id => TILES[id].type === 'red');
+  if (blue.length !== 34 || red.length !== 16) fail('The remaining system deck is incomplete.');
+  for (const player of state.players) player.hand = [...blue.splice(0, 4), ...red.splice(0, 2)];
+  state.unusedTiles = [...blue, ...red];
 }
 
 export function getCurrentPlayer(state: RoomState): number | null {
@@ -97,6 +113,9 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
   validateActor(state, actor);
   // Never mutate the caller's state, including when validation below rejects an action.
   const next = structuredClone(state);
+  // Older rooms dealt normal hands before the opening. Hide them immediately in views,
+  // then lazily migrate on the next successful action without resetting room progress.
+  if (next.phase === 'speaker' && next.players.some(player => player.hand.length > 0)) reclaimHands(next);
   next.revision++;
   next.updatedAt = new Date().toISOString();
   switch (action.type) {
@@ -142,7 +161,10 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
       next.board[action.cellId] = action.tileId;
       next.placements.push({ seatId: actor.seatId, tileId: action.tileId, cellId: action.cellId, kind, exception: move.exception });
       event(next, `${next.players[actor.seatId].name} placed tile ${action.tileId}${move.exception ? ' (unavoidable adjacency exception)' : ''}.`);
-      if (kind === 'seed' && next.speakerPool.length === 0) next.phase = 'placement';
+      if (kind === 'seed' && next.placements.filter(placement => placement.kind === 'seed').length === 4) {
+        dealHands(next);
+        next.phase = 'placement';
+      }
       if (next.placements.length === 52) {
         next.phase = 'complete';
         event(next, 'Galaxy complete. All 52 drafted systems are placed.');
@@ -155,6 +177,7 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
       if (!placement) fail('There is no placement to undo.');
       delete next.board[placement.cellId];
       (placement.kind === 'seed' ? next.speakerPool : next.players[placement.seatId].hand).push(placement.tileId);
+      if (placement.kind === 'seed') reclaimHands(next);
       next.phase = placement.kind === 'seed' ? 'speaker' : 'placement';
       event(next, `Host undid tile ${placement.tileId}; ${next.players[placement.seatId].name} places again.`);
       break;
@@ -170,11 +193,11 @@ export function getRoomView(state: RoomState, actor: Actor): RoomView {
   const player = actor.kind === 'seat' ? state.players[actor.seatId] : null;
   return structuredClone({
     id: state.id, title: state.title, createdAt: state.createdAt, revision: state.revision, practice: state.practice, phase: state.phase,
-    players: state.players.map(({ id, name, ranking, factionId, hand }) => ({ id, name, ready: ranking !== null, factionId: state.phase === 'factions' ? null : factionId, handCount: hand.length })),
+    players: state.players.map(({ id, name, ranking, factionId, hand }) => ({ id, name, ready: ranking !== null, factionId: state.phase === 'factions' ? null : factionId, handCount: state.phase === 'speaker' ? (id === state.speaker ? state.speakerPool.length : 0) : hand.length })),
     priority: state.priority, speaker: state.speaker, currentPlayer: getCurrentPlayer(state),
     board: state.board, placements: state.placements, history: state.history,
     actor: actor.kind === 'host' ? { kind: 'host' as const } : { kind: 'seat' as const, seatId: actor.seatId },
-    myRanking: player?.ranking ?? null, myHand: player?.hand ?? [],
+    myRanking: player?.ranking ?? null, myHand: state.phase === 'speaker' ? [] : player?.hand ?? [],
     speakerPool: player?.id === state.speaker ? state.speakerPool : [],
     legalMoves: player ? getLegalMoves(state, player.id) : [],
     activeRing: activeRing(state), canUndo: actor.kind === 'host' && state.placements.length > 0,
