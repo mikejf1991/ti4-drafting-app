@@ -75,3 +75,14 @@ Discussion
 
 Outcome
 - Live at https://ti4-drafting-app.vercel.app; all eight hosted API scenarios and browser preview, placement, persistence, board-fit and wheel checks passed. No paid upgrade or SWPA table changes.
+## 2026-09-26 12:08 America/Chicago
+Entry ID: LOG-0008
+
+Request
+- Restore wheel zoom over the board while preventing wheel input from scrolling the page there; allow normal scrolling outside the board.
+
+Discussion
+- Use a native non-passive wheel listener scoped to the interactive board, with preventDefault, bounded functional zoom updates, and effect cleanup. Compact landing preview remains unaffected.
+
+Outcome
+- TypeScript and production build passed. Browser checks confirmed board zoom without page scrolling, sidebar scrolling without board zoom, and normal page scrolling outside the board. Publishing via main.

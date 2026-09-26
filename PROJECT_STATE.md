@@ -11,7 +11,7 @@
 
 ## Current State
 
-- Active Objective: Complete. The online TI4 drafting app and requested desktop board changes are deployed and verified.
+- Active Objective: Publish the corrected wheel behavior: board wheel zoom takes priority over page scrolling.
 - Live App: https://ti4-drafting-app.vercel.app
 - Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
 - Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
@@ -21,7 +21,7 @@
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: None.
+- Active Task: Restore wheel zoom while consuming wheel events over the board; preserve sidebar/page scrolling outside the board. Baseline 7643fdb tracked clean, original nine reference media files unchanged and untracked.
 - Last Meaningful Action: Deployed application commit 8a4a4fa and verified the hosted backend and browser behavior. LOG-0007 records publication closeout.
 - Files In Flight: Publication documentation/log closeout only; original nine reference media files remain unchanged and untracked.
 - Verification Status: Passed: 21 unit tests, TypeScript, production build; real Supabase and hosted API checks (eight scenarios including full 52-placement/61-cell draft); direct REST client access denied; independent hosted browser seats confirmed private preview, cancel/reposition, confirmed synchronization, reload persistence, desktop fit and wheel stability. Homepage, health, JS and CSS return 200.
@@ -33,4 +33,4 @@
 - Supabase credentials remain only in ignored .env.local and sensitive Vercel server environment variables. Never print or commit them. Screenshots/test fixtures remain in ignored .scratch.
 - Production browser verification practice room bf568a5c-5285-4f58-9c30-e8707fc97786 contains one confirmed opening placement. API checks also created marked practice rooms only. Do not reuse test seats for a real draft.
 - User manually enabled only TI4 in the existing Vercel GitHub installation, preserving SWPA access. Dashboard sign-in and repo access are resolved.
-- Desktop board fits the viewport; sidebar scrolls independently, roster starts collapsed, wheel zoom is removed. Creuss has no separate inspection dock but tile 51 remains in exports when selected.
+- Desktop board fits the viewport; sidebar scrolls independently and roster starts collapsed. Wheel input over the interactive board zooms and cancels page scrolling, including at zoom limits; wheel input outside the board scrolls normally. Creuss has no separate inspection dock but tile 51 remains in exports when selected.

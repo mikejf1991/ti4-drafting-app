@@ -230,3 +230,30 @@ Verification
 
 Open Items
 - None for the requested implementation and deployment. The host must save its return link; host-link recovery and room-creation rate limiting remain initial-release limitations.
+## 2026-09-26 12:08 America/Chicago
+Entry ID: LOG-0008
+
+Request
+- Restore wheel zoom over the board while preventing wheel input from scrolling the page there; allow normal scrolling outside the board.
+
+Context
+- Baseline: tracked files clean at 7643fdb; nine original reference media files unchanged and untracked. User clarified that wheel zoom should remain, with page scrolling suppressed only while the pointer is over the board.
+
+Actions
+- Added a non-passive native wheel listener on the interactive board wrapper with preventDefault, stopPropagation, functional bounded zoom updates, and effect cleanup. Compact preview does not install the listener.
+- Updated the visible board hint and README to describe scroll-to-zoom and ordinary scrolling outside the board. Preserved the desktop fit and explicit zoom/reset buttons.
+- Read-only peer review confirmed the event approach. Restored the local browser test view and viewport after checks.
+
+Files Changed
+- components/galaxy-board.tsx, README.md, PROJECT_STATE.md
+
+Change Scope
+- Intent and actual: restore wheel zoom without simultaneous page scrolling over the board.
+
+Verification
+- Passed: TypeScript, production build, and git diff whitespace checks.
+- Browser: wheel up changed scale 1 to 1.1, wheel down restored 1, with scrollY remaining zero. At an 800px-wide scrollable layout, board input zoomed without document scroll; wheel outside the board scrolled the document. At desktop width, sidebar scrollTop advanced to 42 while board scale stayed 1 and scrollY stayed zero.
+- Existing drafting rules/API behavior were unchanged, so no new unit tests or full draft reruns were needed.
+
+Open Items
+- Verify the automatically deployed version after pushing main.

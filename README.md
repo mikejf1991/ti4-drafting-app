@@ -30,7 +30,7 @@ Players can return asynchronously using their saved links. Online clients refres
 
 Practice rooms additionally offer sample ranking completion and shortcuts to open each seat. The host still uses a seat's private link to place its tiles.
 
-On desktop, the complete board fits within the window and the controls scroll separately. Use the + / − buttons to zoom, drag to pan, and reset to fit the board again. The mouse wheel does not zoom the board. Expand the player roster when needed. Creuss remains in the map exports without a separate off-board inspection panel.
+On desktop, the complete board fits within the window and the controls scroll separately. Scroll over the board or use the + / − buttons to zoom, drag to pan, and reset to fit the board again. Wheel input over the board zooms without scrolling the page; move the pointer over the sidebar or outside the board to scroll normally. Expand the player roster when needed. Creuss remains in the map exports without a separate off-board inspection panel.
 
 ## Verify
 

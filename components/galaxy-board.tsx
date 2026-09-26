@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CELLS, hexToPixel } from '@/lib/board';
 import { TILES, tileImage } from '@/lib/catalog';
 import type { Cell, PlayerView } from '@/lib/types';
@@ -8,6 +8,8 @@ import type { Cell, PlayerView } from '@/lib/types';
 export const HEX_SIZE = 61;
 export const BOARD_WIDTH = 1240;
 export const BOARD_HEIGHT = 1120;
+
+function clampZoom(value: number) { return Math.max(.65, Math.min(2.6, value)); }
 
 export function hexPoint(cell: Cell, size = HEX_SIZE) {
   return hexToPixel(cell, size);
@@ -37,15 +39,31 @@ type BoardProps = {
 export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCellId, previewTileId, onCellClick, compact = false }: BoardProps) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const boardElement = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
   const suppressClick = useRef(false);
   const legal = new Set(legalCellIds);
   const polygon = hexPolygon();
   const previewCell = selectedCellId && previewTileId != null && !board[selectedCellId] ? selectedCellId : null;
 
-  function changeZoom(next: number) { setZoom(Math.max(.65, Math.min(2.6, next))); }
+  useEffect(() => {
+    const element = boardElement.current;
+    if (!element || compact) return;
 
-  return <div className={`galaxy-board ${compact ? 'galaxy-board--compact' : ''}`}>
+    function onWheel(event: WheelEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.deltaY !== 0) setZoom(current => clampZoom(current + (event.deltaY < 0 ? .1 : -.1)));
+    }
+
+    // A non-passive listener lets the board consume wheel input without scrolling the page.
+    element.addEventListener('wheel', onWheel, { passive: false });
+    return () => element.removeEventListener('wheel', onWheel);
+  }, [compact]);
+
+  function changeZoom(next: number) { setZoom(clampZoom(next)); }
+
+  return <div ref={boardElement} className={`galaxy-board ${compact ? 'galaxy-board--compact' : ''}`}>
     {!compact && <div className="board-tools" aria-label="Board view controls">
       <button type="button" onClick={() => changeZoom(zoom + .2)} aria-label="Zoom in">+</button>
       <button type="button" onClick={() => changeZoom(zoom - .2)} aria-label="Zoom out">−</button>
@@ -86,6 +104,6 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
         })}
       </g>
     </svg>
-    {!compact && <div className="board-hint">Use + / − to zoom · Drag to explore · Select a hex to inspect</div>}
+    {!compact && <div className="board-hint">Scroll to zoom · Drag to explore · Select a hex to inspect</div>}
   </div>;
 }
