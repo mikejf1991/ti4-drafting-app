@@ -1,6 +1,6 @@
-# Draft rules and discovery notes
+# Draft rules and implementation decisions
 
-Status: discussion only, 2026-09-26. Confirmed user decisions and photographed rules are distinguished from proposals below. Do not treat open proposals as approved implementation requirements.
+Status: implemented, 2026-09-26. Routine design defaults were selected under the user's instruction to minimize involvement. Production deployment remains pending Vercel login and Supabase database setup.
 
 ## Confirmed scope and interaction
 
@@ -11,7 +11,7 @@ Status: discussion only, 2026-09-26. Confirmed user decisions and photographed r
 - A player clicks a tile, clicks a location, reviews a private preview, then confirms. Before confirmation, they can correct a misclick. Confirmed placement becomes public.
 - Async by default; simultaneous online attendance should work with the same rules.
 - Desktop usability first; mobile support is secondary.
-- Supabase selected. Avoid additional paid services. Final frontend hosting is undecided.
+- Supabase selected for room persistence and Vercel selected for frontend/server hosting. Avoid additional paid services; production deployment is not yet complete.
 - Multiple-seat testing is required, including independent sessions that verify privacy and synchronization.
 
 ## Faction allocation: confirmed
@@ -23,14 +23,13 @@ Status: discussion only, 2026-09-26. Confirmed user decisions and photographed r
 5. Clockwise seating follows this priority order.
 6. Each player's own faction must be known before map placement so they can build with their faction in mind.
 7. Use all 24 base-game plus Prophecy of Kings factions.
-8. Do not reveal other players' faction choices during faction selection. The user's purpose is to prevent counter-picking. Rankings and provisional assignments must remain private; final reveal timing is still to be clarified.
+8. Do not reveal other players' faction choices during faction selection. Rankings remain private permanently. Final assignments reveal together after all eight rankings lock, before map placement (selected default under the user's autonomy instruction).
 9. Validate exactly eight unique choices from the 24-faction pool and assign only one player per faction. Keep the eligible pool fixed for the room so the guarantee remains valid.
 
-Proposed details, not yet approved:
+Implementation defaults:
 
-- Allow editing until all eight players finalize. Eight distinct eligible choices and privacy during selection are confirmed above.
+- Allow local editing before that player presses Lock ranking. Submitted rankings are final and remain private. Eight distinct eligible choices are required.
 - Lock all lists before drawing priority; persist that draw and do not reroll on refresh.
-- Propose revealing all final assignments together once every faction is locked, before map placement. Alternatively, show each player only their own faction during placement and conceal opponent faction/home artwork until the map is complete. Reveal timing is undecided.
 - Keep rankings and provisional assignments hidden in the host's ordinary app interface as well. Private seat links and server-side checks should enforce this; a backend administrator is outside the app-level secrecy model.
 
 ## Galaxy build: transcribed from user photographs
@@ -45,7 +44,7 @@ Sources: IMG_4675.heic (board), IMG_4676.heic (separate/deal), IMG_4677.heic (pl
 - Complete each ring before starting the next ring.
 - Anomaly systems cannot be adjacent unless there is no other option.
 - Systems with matching wormhole types cannot be adjacent unless there is no other option.
-- Home systems occupy the prescribed positions; the photographed base instructions describe attaching them after the dealt tiles are placed.
+- Home systems occupy the prescribed positions; the photographed base instructions describe attaching them after the dealt tiles are placed. The app displays assigned homes before placement and reserves those eight cells throughout the draft.
 - Tile accounting: 48 dealt + 4 speaker placements + 8 home systems + Mecatol = 61 board positions. From the supplied pools, two blue tiles remain unused and all 18 red tiles are used.
 
 The generator screenshots (IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg) show access to options, PoK tiles, and the extra-tile panel. They are asset-access references, not a request to reproduce every generator setting. The MP4 is present but has not been reviewed; the screenshots provide the requested rules.
@@ -61,18 +60,22 @@ Official reference: https://images-cdn.fantasyflightgames.com/filer_public/51/55
 ## Tile assets
 
 - Home systems: 1-17 and 52-58.
-- Ghosts of Creuss: tile 51 is required only when Ghosts are selected; do not deal it as a normal system tile.
+- Ghosts of Creuss: gate tile 17 occupies the assigned home position; tile 51 is shown separately off-board when Ghosts are selected. Neither is dealt as a normal system tile, and tile 51 is outside the 61-cell board.
 - Mecatol Rex: 18.
 - Blue: 19-38, 59-66, 69-76 (36 tiles).
 - Red: 39-50, 67-68, 77-80 (18 tiles).
 - Ignore 81-91 for this app's requested scope.
-- All requested image endpoints are accessible. Tile 51 was checked separately after the user's clarification.
+- All 80 requested images are downloaded under `public/tiles`, with normalized metadata in `data/tiles.json`. `scripts/fetch-tiles.mjs` refreshes only tiles 1–80, including tile 51.
 - Live asset pattern: https://keeganw.github.io/ti4/tiles/ST_18.webp (replace 18 with tile ID).
 - Source repository: https://github.com/KeeganW/ti4
-- Artwork access does not establish reuse licensing. Assets have not been downloaded or added to this repository.
+- Twilight Imperium artwork belongs to Fantasy Flight Games. Source artwork access does not establish additional reuse licensing; this is an unofficial fan tool.
 
-## Questions to resolve next
+## Operational defaults
 
-1. Reveal all factions together before map placement (proposed), or keep opponent factions hidden until map completion?
-
-Host recovery controls, finalized map export, the exact treatment of placement exceptions, and hosting details can be settled during design. No app implementation has begun.
+- Host can replace a lost private invitation and undo the latest placement. Every confirmed placement and undo appears in the activity history.
+- Practice rooms allow automatic sample rankings and opening all eight independent seats. Real rooms cannot use this shortcut.
+- Completed maps export as board PNG, printable tile-number SVG, and public map JSON.
+- Placement exceptions apply only if no tile/space pair in the current player's active pool is legal on the current ring.
+- Server-side validation and revision-based atomic updates protect turns and simultaneous actions. Each client receives only its own rankings and hand; speaker opening tiles are visible only to the speaker.
+- Vercel is the deployment target; production setup is pending. `database/001_rooms.sql` creates the isolated `public.ti4_draft_rooms_v1` table with RLS and no `anon` or `authenticated` table access. Only server routes use the Supabase secret key.
+- Local file-backed storage is available only for explicit local development (`TI4_STORAGE=local`) and is disabled on Vercel. Environment secrets and local room data must remain outside Git.

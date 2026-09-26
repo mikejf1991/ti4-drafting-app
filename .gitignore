@@ -1,1 +1,12 @@
 .codex-locks/
+node_modules/
+.next/
+.vercel/
+.env
+.env.*
+!.env.example
+.local-data/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.scratch/

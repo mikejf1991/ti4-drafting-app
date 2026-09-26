@@ -1,0 +1,9 @@
+.env*
+.local-data
+.scratch
+IMG_*.heic
+IMG_*.jpeg
+*.mp4
+logs
+test-results
+playwright-report

@@ -108,3 +108,38 @@ Change Scope
 Verification
 - Confirmed new entries appended with ID `LOG-0003`.
 - Verified `logs/session-summary.md` and `logs/session-detail.md` syntax preserved.
+## 2026-09-26 11:13 America/Chicago
+Entry ID: LOG-0004
+
+Request
+- Build the eight-player TI4 drafting app with minimal user involvement and eight private ranked factions per seat.
+
+Context
+- User authorized implementation and SWPA setup investigation with minimal involvement. Logger allocated this entry.
+- Baseline: tracked files clean at 4141b2c; nine original IMG_* reference images and the MP4 were already untracked and remain untouched.
+
+Actions
+- Built Next/React app, 80 local tile assets, 61-cell board, private seat links, and automatic allocation of eight ranked faction choices. Final assignments reveal together; rankings remain private.
+- Implemented clockwise priority, independently random speaker, four opening placements, 48 snake placements, ring/adjacency rules, private previews, confirmation, host undo, invite replacement, and PNG/SVG/JSON exports.
+- Added private server projections and atomic revision checks with explicit local file storage or an isolated Supabase table. Prepared migration; no remote schema changed.
+- Inspected authorized SWPA credential sources without printing values. Runtime keys reside only in ignored .env.local. Dashboard management access and Vercel sign-in are still required.
+- Corrected UI seat ordering, polling races, SVG clicks, confirmation position, and deployment bundle tracing. Saved a project verification skill.
+
+Files Changed
+- app, components, lib, data, database, public, tests, scripts, config, README.md, docs/DRAFT_RULES.md, PROJECT_STATE.md, .codex/skills/ti4-local-verification/SKILL.md
+
+Change Scope
+- Intent: implement, verify, and publish the complete app.
+- Actual: local application and deployment materials completed and verified; publication awaits dashboard sign-in.
+
+Verification
+- Passed: 21 Vitest tests, TypeScript, warning-free production build, npm audit with zero vulnerabilities.
+- Passed on development and production servers: actual HTTP private access, concurrent rankings/actions, unique assignments, hidden speaker pool, invitation revocation, wrong-turn rejection, undo, full 52 placements/61 cells, cross-room isolation, and practice restrictions.
+- Passed in independent browser seats: eight-choice ranking lock, private preview, cancel/reposition, confirmed placement synchronization, and reload persistence.
+- Passed exports: PNG visually inspected; SVG has 61 board polygons plus Creuss; JSON has eight players and 52 placements with no tokens, rankings, or private hands.
+- Matching LOG-0004 entries created. Original media, credentials, local room data, and verification artifacts excluded from commit.
+
+Open Items
+- Pending user Supabase/Vercel sign-in: run database/001_rooms.sql, configure server-only environment variables, deploy, and verify real Supabase-backed actions before completing the goal.
+- Local preview remains on port 3005. Completed browser test room d3c993f0-7e61-4e8e-a527-790ad0fdc723; screenshot .scratch/completed-galaxy.png. Production smoke tests used port 3184.
+- Known limits: no public room-creation rate limit or host-link recovery/rotation; host must retain its private return link. No paid services or deployment created.

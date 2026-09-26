@@ -31,3 +31,14 @@ Discussion
 
 Outcome
 - Updated README, draft rules, and project state. Documentation-only change; no app implementation. Checked the assignment guarantee and retained the separate reveal-timing question.
+## 2026-09-26 11:13 America/Chicago
+Entry ID: LOG-0004
+
+Request
+- Build the eight-player TI4 drafting app with minimal user involvement and eight private ranked factions per seat.
+
+Discussion
+- Implemented real hex-board drafting, private invitation access, automatic faction allocation, clockwise priority, independent speaker, opening placements and snake order; prepared an isolated Supabase table. Online setup needs dashboard sign-ins.
+
+Outcome
+- Local application, build, 21 tests, full API draft, independent-seat browser checks and exports pass. Supabase migration and Vercel deployment remain pending user sign-in; goal stays active.
