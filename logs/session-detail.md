@@ -343,7 +343,9 @@ Verification
 - Passed: 46 unit tests, production build including TypeScript, whitespace checks, and ten local HTTP scenarios covering privacy, delayed deal, undo, all snake turns and 61-cell completion.
 - Regression tests cover Empyrean, home wormholes, ordinary planet/anomaly restrictions, legacy placement records, undo/replay IDs, visit transitions, hidden polling, separate actor keys and malformed storage.
 - Browser: visible identity and all eight home names; navigated away, placed three tiles through normal APIs, and returned to exactly three NEW markers plus the correct LATEST. Mark seen cleared NEW only. Switching seat invitation displayed Henry/Winnu without carrying Tristen's highlights. Desktop had no page overflow; narrow layout retained identity without horizontal overflow.
-- Independent engine and hook/integration reviews found no blocker. Production deployment verification pending push.
+- Independent engine and hook/integration reviews found no blocker.
+- Vercel reported 7867fe3 deployed. Hosted HTTP verifier passed all ten scenarios, including deal timing, privacy, undo/replay, all 48 regular turns and 61 unique board cells.
+- Hosted browser: all eight home labels and correct Tristen/Sardakk identity; after departure and three confirmed API moves, exactly Lodor, Tar'mann and Accoen/Jeol Ir were NEW with Accoen/Jeol Ir LATEST. No desktop page overflow. Saved proof at ignored .scratch/hosted-return-visit.png and retained the practice preview tab.
 
 Open Items
-- Verify the existing Vercel deployment and hosted browser/API after pushing the complete change.
+- None. Refresh existing player tabs for the updated UI; unseen history begins from the first visit with this feature in that browser.

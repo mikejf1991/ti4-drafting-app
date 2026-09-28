@@ -118,4 +118,4 @@ Discussion
 - Homes are orientation previews until drafting finishes and do not constrain anomaly or wormhole placement. Visit snapshots stay local per browser, room and seat; hidden polling cannot consume unseen tiles, and undo/replay uses stable placement IDs.
 
 Outcome
-- Implemented all requested changes. Passed 46 unit tests, production build, all ten local HTTP scenarios, and browser checks for returning visits, Mark seen, identity switching and layout. Publishing through the existing Vercel integration next.
+- Deployed 7867fe3. Passed 46 unit tests, production build, ten local and ten hosted HTTP scenarios, and browser checks for returning visits, Mark seen, identity switching and layout. Live browser showed exactly the three tiles placed while away, all eight home names, and correct player/faction.
