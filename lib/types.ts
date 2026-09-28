@@ -10,7 +10,7 @@ export interface PlayerState {
   id: number; name: string; tokenHash: string; ranking: number[] | null;
   factionId: number | null; hand: number[];
 }
-export interface Placement { seatId: number; tileId: number; cellId: string; kind: 'seed' | 'draft'; exception: boolean; }
+export interface Placement { id?: string; seatId: number; tileId: number; cellId: string; kind: 'seed' | 'draft'; exception: boolean; }
 export interface HistoryEvent { id: string; text: string; at: string; }
 export interface RoomState {
   schemaVersion: 1; id: string; title: string; createdAt: string; updatedAt: string; revision: number;

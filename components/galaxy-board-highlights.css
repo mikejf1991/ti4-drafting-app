@@ -1,0 +1,51 @@
+.hex-recency {
+  fill: none;
+  pointer-events: none;
+  stroke-linejoin: round;
+  stroke-width: 3.5;
+}
+
+.hex-recency--latest {
+  stroke: #ffd27c;
+  filter: drop-shadow(0 0 5px #f4a851);
+}
+
+.hex-recency--new {
+  stroke: #caa5ff;
+  stroke-dasharray: 8 5;
+  filter: drop-shadow(0 0 4px #8d61df);
+}
+
+.home-owner-label,
+.recency-tag {
+  pointer-events: none;
+}
+
+.home-owner-label rect {
+  fill: #07121eea;
+  stroke: #e4b175;
+  stroke-width: 1;
+}
+
+.home-owner-label text {
+  fill: #fff3dc;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+
+.recency-tag rect {
+  fill: #101927ef;
+  stroke-width: 1;
+}
+
+.recency-tag text {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.recency-tag--latest rect { stroke: #ffd27c; }
+.recency-tag--latest text { fill: #ffdf9c; }
+.recency-tag--new rect { stroke: #caa5ff; }
+.recency-tag--new text { fill: #ead8ff; }

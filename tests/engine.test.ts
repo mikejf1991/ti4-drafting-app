@@ -33,6 +33,18 @@ function legacyOpening(placed: number) {
   state.unusedTiles = [...blue, ...red];
   return state;
 }
+// A focused ring-three geometry fixture with ordinary systems throughout the inner rings.
+function homeAdjacencyFixture(homeTile: number, tileId: number) {
+  const state = ready();
+  state.phase = 'placement';
+  state.speakerPool = [];
+  for (const cell of CELLS.filter(cell => cell.ring === 1 || cell.ring === 2)) state.board[cell.id] = 19;
+  const home = HOME_CELLS[0];
+  state.board[home.id] = homeTile;
+  const target = CELLS.find(cell => cell.ring === 3 && neighborIds(home).includes(cell.id))!;
+  state.players[state.speaker!].hand = [tileId, 19];
+  return { state, home, target };
+}
 
 describe('fixed eight-player catalog and geometry', () => {
   it('has 61 unique cells, eight prescribed homes and a flat-top image layout', () => {
@@ -341,6 +353,80 @@ describe('placement and recovery', () => {
     expect(moves.every(move => !move.exception)).toBe(true);
     state.board['0,-1'] = 40; // Beta.
     expect(getLegalMoves(state, state.speaker!).some(move => move.cellId === '1,-1')).toBe(true);
+  });
+  it('ignores the Empyrean nebula home when placing a neighboring anomaly', () => {
+    const { state, target } = homeAdjacencyFixture(56, 43);
+    expect(TILES[56].anomalies).toEqual(['nebula']);
+    const move = { tileId: 43, cellId: target.id, exception: false };
+    expect(getLegalMoves(state, state.speaker!)).toContainEqual(move);
+    const placed = applyAction(state, { kind: 'seat', seatId: state.speaker! }, { type: 'place', ...move });
+    expect(placed.board[target.id]).toBe(43);
+    expect(placed.placements.at(-1)?.exception).toBe(false);
+    expect(getRoomView(state, { kind: 'seat', seatId: state.speaker! }).activeRing).toBe(3);
+  });
+  it('ignores a matching wormhole on the Creuss home position', () => {
+    // The base/PoK deal contains no delta tile; tile 51 exercises delta matching in this fixture.
+    const { state, target } = homeAdjacencyFixture(17, 51);
+    expect(TILES[17].wormholes).toEqual(['delta']);
+    expect(TILES[51].wormholes).toEqual(['delta']);
+    expect(getLegalMoves(state, state.speaker!)).toContainEqual({ tileId: 51, cellId: target.id, exception: false });
+  });
+  it('excludes homes by board position rather than tile type or absent metadata', () => {
+    const { state, home, target } = homeAdjacencyFixture(79, 26);
+    expect(TILES[79].type).toBe('red');
+    expect(TILES[79].wormholes).toEqual(['alpha']);
+    expect(getLegalMoves(state, state.speaker!)).toContainEqual({ tileId: 26, cellId: target.id, exception: false });
+    const neighbor = CELLS.find(cell => cell.ring === 3 && neighborIds(target).includes(cell.id))!;
+    state.board[home.id] = 1;
+    state.board[neighbor.id] = 79;
+    expect(getLegalMoves(state, state.speaker!).some(move => move.tileId === 26 && move.cellId === target.id)).toBe(false);
+  });
+  it.each([67, 68])('still blocks an anomaly next to non-home planet/anomaly tile %i', blocker => {
+    const { state, target } = homeAdjacencyFixture(56, 43);
+    const neighbor = CELLS.find(cell => cell.ring === 3 && neighborIds(target).includes(cell.id))!;
+    state.board[neighbor.id] = blocker;
+    expect(TILES[blocker].planets.length).toBeGreaterThan(0);
+    expect(TILES[blocker].anomalies.length).toBeGreaterThan(0);
+    expect(getLegalMoves(state, state.speaker!)).toContainEqual({ tileId: 19, cellId: target.id, exception: false });
+    expect(getLegalMoves(state, state.speaker!).some(move => move.tileId === 43 && move.cellId === target.id)).toBe(false);
+    expect(() => applyAction(state, { kind: 'seat', seatId: state.speaker! }, { type: 'place', tileId: 43, cellId: target.id })).toThrow(/another legal placement/);
+  });
+  it.each([67, 68])('still treats non-home planet/anomaly tile %i as an anomaly when placing it', tileId => {
+    const { state, target } = homeAdjacencyFixture(56, tileId);
+    const neighbor = CELLS.find(cell => cell.ring === 3 && neighborIds(target).includes(cell.id))!;
+    state.board[neighbor.id] = 43;
+    expect(getLegalMoves(state, state.speaker!).some(move => move.tileId === tileId && move.cellId === target.id)).toBe(false);
+  });
+  it('gives an undo/replay of the same tile and position a new public placement ID', () => {
+    const state = ready();
+    const move = getLegalMoves(state, state.speaker!)[0];
+    const action = { type: 'place' as const, tileId: move.tileId, cellId: move.cellId };
+    const placed = applyAction(state, { kind: 'seat', seatId: state.speaker! }, action);
+    const first = structuredClone(placed.placements[0]);
+    expect(first.id).toBe(`placement:${placed.revision}`);
+    expect(getRoomView(placed, { kind: 'host' }).placements[0].id).toBe(first.id);
+    const undone = applyAction(placed, { kind: 'host' }, { type: 'undo' });
+    expect(undone.placements).toEqual([]);
+    const replayed = applyAction(undone, { kind: 'seat', seatId: state.speaker! }, action);
+    const second = replayed.placements[0];
+    expect(second.id).toBe(`placement:${replayed.revision}`);
+    expect(second.id).not.toBe(first.id);
+    expect(second).toEqual({ ...first, id: second.id });
+    expect(placed.placements[0]).toEqual(first);
+  });
+  it('preserves older placements without IDs while assigning IDs only to newly placed tiles', () => {
+    let state = placeFirst(placeFirst(ready()));
+    for (const placement of state.placements) delete placement.id;
+    const legacy = structuredClone(state);
+    expect(getRoomView(state, { kind: 'host' }).placements).toEqual(legacy.placements);
+    expect(state).toEqual(legacy);
+    const next = placeFirst(state);
+    expect(next.placements.slice(0, 2)).toEqual(legacy.placements);
+    expect(next.placements.at(-1)?.id).toBe(`placement:${next.revision}`);
+    const undone = applyAction(next, { kind: 'host' }, { type: 'undo' });
+    expect(undone.placements).toEqual(legacy.placements);
+    const legacyUndo = applyAction(undone, { kind: 'host' }, { type: 'undo' });
+    expect(legacyUndo.placements).toEqual(legacy.placements.slice(0, 1));
   });
   it('undo restores phase, active player and pool across seed, snake and completion boundaries', () => {
     let state = ready();

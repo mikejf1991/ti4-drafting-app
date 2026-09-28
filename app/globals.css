@@ -36,3 +36,25 @@
   .draft-section,.host-section,.tile-inspector{padding:18px 20px}
   .tile-hand{max-height:min(30dvh,240px)}
 }
+
+/* Keep seat identity and return-visit context visible above the galaxy. */
+.board-topline{gap:16px;align-items:center}
+.board-topline>div:first-child{min-width:0}
+.board-topline h1{overflow-wrap:anywhere}
+.seat-identity{display:flex;flex-direction:column;gap:3px;text-align:right;min-width:0;max-width:48%}
+.seat-identity strong{font-size:17px;color:#f1e4c9;overflow-wrap:anywhere}
+.seat-faction{color:#a9c4d0;font-size:12px;overflow-wrap:anywhere}
+.board-updates{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;padding:10px 20px 0;flex:none;flex-wrap:wrap}
+.board-updates .board-key{display:flex;gap:8px 14px;flex-wrap:wrap}
+.board-key>span{white-space:nowrap}
+.key-dot--latest{background:#ffdc8b;box-shadow:0 0 0 2px #8a672c}
+.key-dot--new{background:#bf9bff}
+.placement-updates{display:flex;align-items:center;gap:12px;color:#d6bdff;font-size:12px}
+.placement-updates .text-button{padding:4px 0;color:#d6bdff;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:560px){
+  .board-topline{padding:16px 16px 0;align-items:flex-start}
+  .board-topline h1{font-size:22px}
+  .seat-identity strong{font-size:15px}
+  .seat-faction{font-size:11px}
+  .board-updates{padding-inline:16px}
+}

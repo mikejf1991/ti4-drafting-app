@@ -1,6 +1,6 @@
 # Draft rules and implementation decisions
 
-Status: implemented, 2026-09-26. Routine design defaults were selected under the user's instruction to minimize involvement. Production deployment remains pending Vercel login and Supabase database setup.
+Status: implemented and deployed. Routine design defaults were selected under the user's instruction to minimize involvement.
 
 ## Confirmed scope and interaction
 
@@ -11,7 +11,7 @@ Status: implemented, 2026-09-26. Routine design defaults were selected under the
 - A player clicks a tile, clicks a location, reviews a private preview, then confirms. Before confirmation, they can correct a misclick. Confirmed placement becomes public.
 - Async by default; simultaneous online attendance should work with the same rules.
 - Desktop usability first; mobile support is secondary.
-- Supabase selected for room persistence and Vercel selected for frontend/server hosting. Avoid additional paid services; production deployment is not yet complete.
+- Supabase provides room persistence and Vercel hosts the app on the free Hobby plan.
 - Multiple-seat testing is required, including independent sessions that verify privacy and synchronization.
 
 ## Faction allocation: confirmed
@@ -46,7 +46,7 @@ Sources: IMG_4675.heic (board), IMG_4676.heic (separate/deal), IMG_4677.heic (pl
 - Complete each ring before starting the next ring.
 - Anomaly systems cannot be adjacent unless there is no other option.
 - Systems with matching wormhole types cannot be adjacent unless there is no other option.
-- Home systems occupy the prescribed positions; the photographed base instructions describe attaching them after the dealt tiles are placed. The app displays assigned homes before placement and reserves those eight cells throughout the draft.
+- Home systems attach after all dealt tiles are placed, following the group's agreed interpretation. The app displays assigned homes for orientation and reserves those eight positions throughout the draft, but ignores home positions when checking anomaly and matching-wormhole adjacency. An anomaly may therefore be placed beside the Empyrean home system. Ordinary planet systems containing anomalies still count as anomalies.
 - Tile accounting: 48 dealt + 4 speaker placements + 8 home systems + Mecatol = 61 board positions. From the supplied pools, two blue tiles remain unused and all 18 red tiles are used.
 
 The generator screenshots (IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg) show access to options, PoK tiles, and the extra-tile panel. They are asset-access references, not a request to reproduce every generator setting. The MP4 is present but has not been reviewed; the screenshots provide the requested rules.
@@ -77,6 +77,8 @@ Official reference: https://images-cdn.fantasyflightgames.com/filer_public/51/55
 - Host can replace a lost private invitation and undo the latest placement. Undoing the fourth opening placement withdraws all regular hands until it is confirmed again, then restores the same deal. Every confirmed placement and undo appears in the activity history.
 - Practice rooms allow automatic sample rankings and opening all eight independent seats. Real rooms cannot use this shortcut.
 - Completed maps export as board PNG, printable tile-number SVG, and public map JSON.
+- Each seat page shows its player's name and assigned faction. Home hexes show their owners publicly in clockwise priority order.
+- The latest confirmed tile is marked on the board. Additional highlights show placements since the last visit, with a Mark seen control. Visit tracking is local to this browser, separately for each room and seat (and host view); it does not synchronize across devices. The first visit starts from the current board. Leaving the page or switching away saves the last visibly viewed board, and background polling cannot consume unseen placements. Undo removes a highlight; replay creates a fresh placement identity.
 - Placement exceptions apply only if no tile/space pair in the current player's active pool is legal on the current ring.
 - Server-side validation and revision-based atomic updates protect turns and simultaneous actions. Each client receives only its own rankings and hand; speaker opening tiles are visible only to the speaker.
 - The live app is https://ti4-drafting-app.vercel.app on Vercel Hobby. `database/001_rooms.sql` creates the isolated `public.ti4_draft_rooms_v1` table with RLS and no `anon` or `authenticated` table access. Only server routes use the Supabase secret key.

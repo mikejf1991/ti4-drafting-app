@@ -7,6 +7,7 @@ import type { Cell, RoomAction, RoomView, Tile } from '@/lib/types';
 import { GalaxyBoard } from './galaxy-board';
 import { ExportMap } from './export-map';
 import { HandTileDetails, handTileLabel } from './hand-tile-details';
+import { usePlacementUpdates } from './use-placement-updates';
 
 const phaseNames: Record<RoomView['phase'], string> = { factions: 'Faction selection', speaker: 'Opening placements', placement: 'System placement', complete: 'Galaxy complete' };
 
@@ -34,6 +35,7 @@ export function RoomClient({ roomId }: { roomId: string }) {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inspection, setInspection] = useState<number | null>(null);
   const [rosterOpen, setRosterOpen] = useState<boolean | null>(null);
+  const { newCellIds, markSeen } = usePlacementUpdates(room, roomId);
 
   useEffect(() => {
     const restoreIdentity = () => {
@@ -110,6 +112,8 @@ export function RoomClient({ roomId }: { roomId: string }) {
   const inspectedTile = getTile(inspection ?? selectedTileId ?? (selectedCellId ? room?.board[selectedCellId] : null));
   const isHost = room?.actor.kind === 'host';
   const mySeat = room?.actor.kind === 'seat' ? room.actor.seatId : null;
+  const myPlayer = mySeat == null ? null : room?.players.find(player => player.id === mySeat);
+  const latestCellId = room?.placements.at(-1)?.cellId;
   const isTurn = mySeat !== null && room?.currentPlayer === mySeat;
   const readyCount = room?.players.filter(player => player.ready).length ?? 0;
   const activeHand = room?.phase === 'speaker' ? room.speakerPool : room?.myHand ?? [];
@@ -185,7 +189,11 @@ export function RoomClient({ roomId }: { roomId: string }) {
     {!room ? <div className="room-loading">{connection === 'retrying' ? 'Trying to reconnect to the room…' : 'Loading galaxy…'}</div> : <>
       <div className="room-status-bar"><div><span className="eyebrow">{phaseNames[room.phase]}</span><strong>{room.phase === 'complete' ? 'The map is ready' : room.phase === 'factions' ? `${readyCount} of 8 rankings locked` : room.currentPlayer != null ? `${room.players[room.currentPlayer]?.name ?? 'A player'} is drafting` : 'Preparing the next pick'}</strong></div><div className="status-meta">{room.activeRing != null && <span>RING {room.activeRing}</span>}</div></div>
       <div className="room-layout">
-        <section className="board-column"><div className="board-topline"><div><span className="eyebrow">THE GALAXY</span><h1>{room.title}</h1></div><div className="board-key"><span><i className="key-dot key-dot--legal"/> Legal space</span><span><i className="key-dot key-dot--selected"/> Selected</span></div></div><GalaxyBoard board={room.board} players={orderedPlayers} legalCellIds={legalCells} selectedCellId={selectedCellId} previewTileId={previewMove ? selectedTileId : null} onCellClick={onCellClick}/></section>
+        <section className="board-column">
+          <div className="board-topline"><div><span className="eyebrow">THE GALAXY</span><h1>{room.title}</h1></div><div className="seat-identity" aria-label={myPlayer ? 'Your player identity' : 'Host view'}><span className="eyebrow">{myPlayer ? 'YOUR SEAT' : 'HOST VIEW'}</span>{myPlayer && <><strong>{myPlayer.name}</strong><span className="seat-faction">{myPlayer.factionId == null ? 'Choosing factions' : factionName(myPlayer.factionId)}</span></>}</div></div>
+          <div className="board-updates"><div className="board-key"><span><i className="key-dot key-dot--legal"/> Legal space</span><span><i className="key-dot key-dot--selected"/> Selected</span>{latestCellId && <span><i className="key-dot key-dot--latest"/> Latest tile</span>}{newCellIds.length > 0 && <span><i className="key-dot key-dot--new"/> New since last visit</span>}</div>{newCellIds.length > 0 && <div className="placement-updates" role="status"><span>{newCellIds.length} new {newCellIds.length === 1 ? 'tile' : 'tiles'}</span><button type="button" className="text-button" onClick={markSeen}>Mark seen</button></div>}</div>
+          <GalaxyBoard board={room.board} players={orderedPlayers} legalCellIds={legalCells} selectedCellId={selectedCellId} previewTileId={previewMove ? selectedTileId : null} latestCellId={latestCellId} newCellIds={newCellIds} onCellClick={onCellClick}/>
+        </section>
         <aside className="control-column">
           <div className="control-scroll">
             <section className="roster-section"><div className="section-title"><span className="eyebrow">{room.priority.length ? 'CLOCKWISE PRIORITY' : 'THE TABLE'}</span><button type="button" className="roster-toggle" aria-expanded={showRoster} onClick={() => setRosterOpen(!showRoster)}>{showRoster ? "Hide" : "Show"} · 8 players</button></div>{showRoster && <div className="roster-list">{orderedPlayers.map((player, index) => <div key={player.id} className={`roster-row ${room.currentPlayer === player.id ? 'roster-row--current' : ''} ${mySeat === player.id ? 'roster-row--me' : ''}`}><span className="roster-seat">{String(index + 1).padStart(2, '0')}</span><span className="roster-person"><strong>{player.name}{mySeat === player.id ? ' · You' : ''}{room.speaker === player.id ? ' ★' : ''}</strong><small>{player.factionId == null ? (player.ready ? 'Ranking locked' : 'Choosing factions') : factionName(player.factionId)}</small></span><span className="roster-tag">{room.phase === 'factions' ? (player.ready ? 'READY' : 'WAITING') : room.currentPlayer === player.id ? 'ON TURN' : player.handCount ? `${player.handCount} TILES` : '—'}</span></div>)}</div>}</section>
@@ -199,7 +207,7 @@ export function RoomClient({ roomId }: { roomId: string }) {
         </aside>
       </div>
       {room.history.length > 0 && <div className="activity-strip"><span className="eyebrow">LATEST</span><span>{room.history.at(-1)?.text}</span></div>}
-      {rulesOpen && <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setRulesOpen(false); }}><section className="rules-modal" role="dialog" aria-modal="true" aria-label="Draft rules"><button className="modal-close" onClick={() => setRulesOpen(false)} aria-label="Close rules">×</button><span className="eyebrow">TABLE GUIDE</span><h2>How the draft works</h2><ol><li><strong>Rank factions.</strong> Every player privately ranks eight factions. Lists lock when submitted.</li><li><strong>Establish speaker and priority.</strong> Faction assignments and clockwise priority are revealed together after all rankings lock. The speaker is drawn independently at random.</li><li><strong>Place systems.</strong> Only the speaker is dealt an opening hand of 2 blue and 2 red tiles, placed next to Mecatol Rex. After all four are placed, everyone receives 4 blue and 2 red tiles. Starting with the speaker, place clockwise, then reverse at each end with consecutive turns for the end player. The speaker places the final tile: 52 placements total. Complete each ring before moving outward. Select a tile and highlighted legal hex, then confirm. Matching wormholes and anomalies cannot touch unless no legal alternative exists.</li><li><strong>Finish the galaxy.</strong> Once all placements are made, save the map and tile list.</li></ol><p>Only the player on turn sees legal placement options. The host can replace lost invitations and undo the latest placement.</p></section></div>}
+      {rulesOpen && <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) setRulesOpen(false); }}><section className="rules-modal" role="dialog" aria-modal="true" aria-label="Draft rules"><button className="modal-close" onClick={() => setRulesOpen(false)} aria-label="Close rules">×</button><span className="eyebrow">TABLE GUIDE</span><h2>How the draft works</h2><ol><li><strong>Rank factions.</strong> Every player privately ranks eight factions. Lists lock when submitted.</li><li><strong>Establish speaker and priority.</strong> Faction assignments and clockwise priority are revealed together after all rankings lock. The speaker is drawn independently at random.</li><li><strong>Place systems.</strong> Only the speaker is dealt an opening hand of 2 blue and 2 red tiles, placed next to Mecatol Rex. After all four are placed, everyone receives 4 blue and 2 red tiles. Starting with the speaker, place clockwise, then reverse at each end with consecutive turns for the end player. The speaker places the final tile: 52 placements total. Complete each ring before moving outward. Select a tile and highlighted legal hex, then confirm. Matching wormholes and anomalies cannot touch unless no legal alternative exists. Home systems are shown for orientation but attach after drafting, so their anomalies and wormholes do not restrict placements.</li><li><strong>Finish the galaxy.</strong> Once all placements are made, save the map and tile list.</li></ol><p>Only the player on turn sees legal placement options. The host can replace lost invitations and undo the latest placement.</p></section></div>}
     </>}
   </main>;
 }

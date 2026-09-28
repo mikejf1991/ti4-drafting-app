@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CELLS, hexToPixel } from '@/lib/board';
 import { TILES, tileImage } from '@/lib/catalog';
 import type { Cell, PlayerView } from '@/lib/types';
+import './galaxy-board-highlights.css';
 
 export const HEX_SIZE = 61;
 export const BOARD_WIDTH = 1240;
@@ -26,24 +27,33 @@ export function hexPolygon(size = HEX_SIZE) {
   return hexVertices(size).map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
 }
 
+function shortOwnerName(name: string) {
+  return name.length > 10 ? `${name.slice(0, 9).trimEnd()}…` : name;
+}
+
 type BoardProps = {
   board: Record<string, number>;
   players?: PlayerView[];
   legalCellIds?: string[];
   selectedCellId?: string | null;
   previewTileId?: number | null;
+  latestCellId?: string;
+  newCellIds?: string[];
   onCellClick?: (cell: Cell) => void;
   compact?: boolean;
 };
 
-export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCellId, previewTileId, onCellClick, compact = false }: BoardProps) {
+export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCellId, previewTileId, latestCellId, newCellIds = [], onCellClick, compact = false }: BoardProps) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const boardElement = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
   const suppressClick = useRef(false);
   const legal = new Set(legalCellIds);
+  const newCells = new Set(newCellIds);
   const polygon = hexPolygon();
+  const recencyPolygon = hexPolygon(HEX_SIZE - 6);
+  const secondaryRecencyPolygon = hexPolygon(HEX_SIZE - 12);
   const previewCell = selectedCellId && previewTileId != null && !board[selectedCellId] ? selectedCellId : null;
 
   useEffect(() => {
@@ -86,19 +96,28 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
           const tileId = board[cell.id] ?? (previewCell === cell.id ? previewTileId : null);
           const home = cell.homeIndex !== null;
           const owner = home ? players[cell.homeIndex!] : null;
+          const ownerName = home ? owner?.name ?? `Player ${cell.homeIndex! + 1}` : '';
           const selected = selectedCellId === cell.id;
           const allowed = legal.has(cell.id);
+          const confirmed = board[cell.id] != null;
+          const latest = confirmed && latestCellId === cell.id;
+          const newSinceVisit = confirmed && newCells.has(cell.id);
           const tile = tileId != null ? TILES[tileId] : null;
           return <g key={cell.id} transform={`translate(${x} ${y})`} className={`board-cell ${allowed ? 'board-cell--legal' : ''} ${selected ? 'board-cell--selected' : ''} ${home ? 'board-cell--home' : ''}`}
             role={onCellClick ? 'button' : undefined} tabIndex={onCellClick ? 0 : undefined}
-            aria-label={`${home ? `${owner?.name ?? `Seat ${cell.homeIndex! + 1}`} home` : cell.ring === 0 ? 'Mecatol Rex' : `Ring ${cell.ring} cell ${cell.id}`}${tile ? `, ${tile.name}` : ', empty'}${allowed ? ', legal placement' : ''}`}
+            aria-label={`${home ? `${ownerName} home` : cell.ring === 0 ? 'Mecatol Rex' : `Ring ${cell.ring} cell ${cell.id}`}${tile ? `, ${tile.name}` : ', empty'}${latest ? ', latest placement' : ''}${newSinceVisit ? ', new since last visit' : ''}${allowed ? ', legal placement' : ''}`}
             onClick={() => { if (!suppressClick.current) onCellClick?.(cell); }}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCellClick?.(cell); } }}>
+            {home && <title>{ownerName} home system</title>}
             <polygon points={polygon} className="hex-base"/>
             {tileId != null && <image href={tileImage(tileId)} x={-HEX_SIZE} y={-Math.sqrt(3) * HEX_SIZE / 2} width={2 * HEX_SIZE} height={Math.sqrt(3) * HEX_SIZE} preserveAspectRatio="xMidYMid meet" clipPath={`url(#hex-${cell.id.replace(',', '-')})`} opacity={previewCell === cell.id ? .72 : 1}/>}
             <polygon points={polygon} className="hex-outline"/>
+            {latest && <polygon points={recencyPolygon} className="hex-recency hex-recency--latest" aria-hidden="true"/>}
+            {newSinceVisit && <polygon points={latest ? secondaryRecencyPolygon : recencyPolygon} className="hex-recency hex-recency--new" aria-hidden="true"/>}
             {allowed && !tileId && <><circle r="15" className="legal-marker"/><text className="legal-marker-text" textAnchor="middle" dominantBaseline="middle">+</text></>}
-            {home && !tileId && <><text className="home-placeholder-number" textAnchor="middle" y="-8">{String(cell.homeIndex! + 1).padStart(2, '0')}</text><text className="home-placeholder-label" textAnchor="middle" y="13">{owner?.name ?? `PLAYER ${cell.homeIndex! + 1}`}</text></>}
+            {home && <g className="home-owner-label" aria-hidden="true"><rect x="-43" y="-35" width="86" height="18" rx="4"/><text textAnchor="middle" y="-22">{shortOwnerName(ownerName)}</text></g>}
+            {home && !tileId && <text className="home-placeholder-number" textAnchor="middle" y="14">{String(cell.homeIndex! + 1).padStart(2, '0')}</text>}
+            {(latest || newSinceVisit) && <g className={`recency-tag ${latest ? 'recency-tag--latest' : 'recency-tag--new'}`} aria-hidden="true"><rect x={latest ? -27 : -19} y="23" width={latest ? 54 : 38} height="17" rx="3"/><text textAnchor="middle" y="35">{latest ? 'LATEST' : 'NEW'}</text></g>}
             {previewCell === cell.id && <text className="preview-watermark" textAnchor="middle" y="47">PREVIEW</text>}
           </g>;
         })}

@@ -93,6 +93,10 @@ function activeRing(state: RoomState): number | null {
 function conflicts(state: RoomState, tileId: number, cellId: string): boolean {
   const tile = TILES[tileId];
   return neighborIds(CELL_BY_ID[cellId]).some(id => {
+    // Homes are displayed for orientation but attach after drafting, so they do not
+    // constrain placements. Identify home positions rather than the tile's metadata.
+    const neighbor = CELL_BY_ID[id];
+    if (neighbor && neighbor.homeIndex !== null) return false;
     const other = TILES[state.board[id]];
     return other && ((tile.anomalies.length > 0 && other.anomalies.length > 0) || tile.wormholes.some(wormhole => other.wormholes.includes(wormhole)));
   });
@@ -159,7 +163,7 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
       if (!move) fail('Anomaly or matching-wormhole adjacency is forbidden while another legal placement exists.');
       pool.splice(pool.indexOf(action.tileId), 1);
       next.board[action.cellId] = action.tileId;
-      next.placements.push({ seatId: actor.seatId, tileId: action.tileId, cellId: action.cellId, kind, exception: move.exception });
+      next.placements.push({ id: `placement:${next.revision}`, seatId: actor.seatId, tileId: action.tileId, cellId: action.cellId, kind, exception: move.exception });
       event(next, `${next.players[actor.seatId].name} placed tile ${action.tileId}${move.exception ? ' (unavoidable adjacency exception)' : ''}.`);
       if (kind === 'seed' && next.placements.filter(placement => placement.kind === 'seed').length === 4) {
         dealHands(next);

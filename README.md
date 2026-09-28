@@ -32,6 +32,10 @@ Practice rooms additionally offer sample ranking completion and shortcuts to ope
 
 Your tile hand shows each planet's resources/influence as `R / I`, with labeled, color-coded technology skips. Multi-planet systems show a separate row for each planet, so inspecting the tile is optional.
 
+Your name and assigned faction appear above the board, and each home hex shows its owner's name. The latest confirmed tile is highlighted; additional highlights show tiles placed since your last visit. Use **Mark seen** to clear those additional highlights. Visits are remembered separately for each room and seat in this browser, so a different device starts with a fresh baseline.
+
+Home systems are shown for orientation during drafting but attach only after the ordinary tiles. Their anomalies and wormholes therefore do not restrict placements beside them, including the Empyrean home nebula. Ordinary systems with both planets and anomalies still follow the anomaly rule.
+
 On desktop, the complete board fits within the window and the controls scroll separately. Scroll over the board or use the + / − buttons to zoom, drag to pan, and reset to fit the board again. Wheel input over the board zooms without scrolling the page; move the pointer over the sidebar or outside the board to scroll normally. Expand the player roster when needed. Creuss remains in the map exports without a separate off-board inspection panel.
 
 ## Verify

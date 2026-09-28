@@ -318,3 +318,32 @@ Verification
 
 Open Items
 - None. Refresh existing tabs to load the new hand display.
+## 2026-09-27 21:06 America/Chicago
+Entry ID: LOG-0011
+
+Request
+- Apply the agreed home-system adjacency interpretation and add personal identity, public home names, latest tile and since-last-visit highlights.
+
+Context
+- Baseline fd20e91: tracked files clean; original nine reference media files untracked and untouched. User agreed homes attach after ordinary tiles, specifically allowing anomalies beside Empyrean.
+
+Actions
+- Excluded home positions from drafting anomaly/wormhole checks while retaining restrictions for non-home systems containing planets and anomalies. Existing rooms require no reset or migration.
+- Added name/faction above the board and public owner labels on home hexes, with complete accessible names and compact visible labels. Latest confirmed placement has a gold outline/tag; unseen placements have purple dashed outlines.
+- Added browser-local visit snapshots per room and seat/host. First visit starts from the current board; visible updates accumulate until Mark seen or departure. Hidden polling cannot advance the seen snapshot. Optional revision-based placement IDs distinguish undo/replay without changing old records.
+- Kept legal/selected/preview markers and wheel zoom intact; documented the rule and browser-local visit behavior. Created only marked practice fixtures, with links/screenshots in ignored .scratch.
+
+Files Changed
+- lib/engine.ts,lib/types.ts,lib/placement-updates.ts,tests/engine.test.ts,tests/placement-updates.test.ts,components/use-placement-updates.ts,components/galaxy-board.tsx,components/galaxy-board-highlights.css,components/room-client.tsx,app/globals.css,README.md,docs/DRAFT_RULES.md,PROJECT_STATE.md
+
+Change Scope
+- Intent and actual: implement the agreed home adjacency rule, personal identity, public home labels, and latest/since-last-visit highlights.
+
+Verification
+- Passed: 46 unit tests, production build including TypeScript, whitespace checks, and ten local HTTP scenarios covering privacy, delayed deal, undo, all snake turns and 61-cell completion.
+- Regression tests cover Empyrean, home wormholes, ordinary planet/anomaly restrictions, legacy placement records, undo/replay IDs, visit transitions, hidden polling, separate actor keys and malformed storage.
+- Browser: visible identity and all eight home names; navigated away, placed three tiles through normal APIs, and returned to exactly three NEW markers plus the correct LATEST. Mark seen cleared NEW only. Switching seat invitation displayed Henry/Winnu without carrying Tristen's highlights. Desktop had no page overflow; narrow layout retained identity without horizontal overflow.
+- Independent engine and hook/integration reviews found no blocker. Production deployment verification pending push.
+
+Open Items
+- Verify the existing Vercel deployment and hosted browser/API after pushing the complete change.

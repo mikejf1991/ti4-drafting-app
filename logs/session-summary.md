@@ -108,3 +108,14 @@ Discussion
 
 Outcome
 - Deployed 983a7b4. Build/TypeScript and local/hosted browser checks passed: separate planet values, color-labeled tech skips, no horizontal overflow, and retained click-to-inspect. The live hand displays stats before any inspector is opened.
+## 2026-09-27 21:06 America/Chicago
+Entry ID: LOG-0011
+
+Request
+- Apply the agreed home-system adjacency interpretation and add personal identity, public home names, latest tile and since-last-visit highlights.
+
+Discussion
+- Homes are orientation previews until drafting finishes and do not constrain anomaly or wormhole placement. Visit snapshots stay local per browser, room and seat; hidden polling cannot consume unseen tiles, and undo/replay uses stable placement IDs.
+
+Outcome
+- Implemented all requested changes. Passed 46 unit tests, production build, all ten local HTTP scenarios, and browser checks for returning visits, Mark seen, identity switching and layout. Publishing through the existing Vercel integration next.
