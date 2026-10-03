@@ -203,10 +203,11 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
   return next;
 }
 
-/** A preview is shown only while its seat is still the one to move. */
+/** A preview is shown only while it is still one of the active seat's legal moves. */
 function currentPreview(state: RoomState) {
   const preview = state.pendingPreview;
-  if (!preview || preview.seatId !== getCurrentPlayer(state) || state.board[preview.cellId]) return null;
+  if (!preview || preview.seatId !== getCurrentPlayer(state)) return null;
+  if (!getLegalMoves(state, preview.seatId).some(move => move.tileId === preview.tileId && move.cellId === preview.cellId)) return null;
   return { seatId: preview.seatId, tileId: preview.tileId, cellId: preview.cellId };
 }
 
