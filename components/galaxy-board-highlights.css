@@ -49,3 +49,49 @@
 .recency-tag--latest text { fill: #ffdf9c; }
 .recency-tag--new rect { stroke: #caa5ff; }
 .recency-tag--new text { fill: #ead8ff; }
+
+/* Another player's unconfirmed selection: marching dashes read as "not locked in". */
+.hex-pending {
+  fill: none;
+  pointer-events: none;
+  stroke: #6fe7d6;
+  stroke-width: 4;
+  stroke-dasharray: 10 6;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px #2fb5a3);
+  animation: hex-pending-march 1.2s linear infinite;
+}
+
+@keyframes hex-pending-march {
+  to { stroke-dashoffset: -32; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hex-pending { animation: none; }
+}
+
+.recency-tag--pending rect { stroke: #6fe7d6; }
+.recency-tag--pending text { fill: #c9fff6; }
+
+.key-dot--pending { background: #6fe7d6; }
+
+.pending-note {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border: 1px dashed #6fe7d6;
+  background: #0f2e33;
+  color: #c9fff6;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* SVG cells can't layer a rectangular focus outline; mark keyboard focus on the hex itself. */
+.board-cell:focus,
+.board-cell:focus-visible {
+  outline: none;
+}
+
+.board-cell:focus-visible:not(.board-cell--selected) .hex-outline {
+  stroke: #e1eef1;
+  stroke-width: 3;
+}

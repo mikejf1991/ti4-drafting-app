@@ -120,8 +120,11 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
   // Older rooms dealt normal hands before the opening. Hide them immediately in views,
   // then lazily migrate on the next successful action without resetting room progress.
   if (next.phase === 'speaker' && next.players.some(player => player.hand.length > 0)) reclaimHands(next);
-  next.revision++;
+  // Previews keep the revision so the placer's pending confirm stays valid; the
+  // route's compare-and-swap on the unchanged revision still rejects stale writes.
+  if (action.type !== 'preview') next.revision++;
   next.updatedAt = new Date().toISOString();
+  if (action.type !== 'preview') next.pendingPreview = null;
   switch (action.type) {
     case 'rank': {
       if (actor.kind !== 'seat') fail('Only a player can lock a faction ranking.');
@@ -175,6 +178,15 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
       }
       break;
     }
+    case 'preview': {
+      if (actor.kind !== 'seat') fail('Open the active player’s private link to preview a tile.');
+      if (next.phase !== 'speaker' && next.phase !== 'placement') fail('Tile placement is not active.');
+      if (getCurrentPlayer(next) !== actor.seatId) fail('It is not your turn.');
+      const move = action.move;
+      if (move && !getLegalMoves(next, actor.seatId).some(legal => legal.tileId === move.tileId && legal.cellId === move.cellId)) fail('That placement is not available.');
+      next.pendingPreview = move ? { seatId: actor.seatId, tileId: move.tileId, cellId: move.cellId } : null;
+      break;
+    }
     case 'undo': {
       if (actor.kind !== 'host') fail('Only the host can undo the last placement.');
       const placement = next.placements.pop();
@@ -191,6 +203,14 @@ export function applyAction(state: RoomState, actor: Actor, action: RoomAction, 
   return next;
 }
 
+/** A preview is shown only while it is still one of the active seat's legal moves. */
+function currentPreview(state: RoomState) {
+  const preview = state.pendingPreview;
+  if (!preview || preview.seatId !== getCurrentPlayer(state)) return null;
+  if (!getLegalMoves(state, preview.seatId).some(move => move.tileId === preview.tileId && move.cellId === preview.cellId)) return null;
+  return { seatId: preview.seatId, tileId: preview.tileId, cellId: preview.cellId };
+}
+
 /** Build a whitelist projection. Never spread persisted RoomState into an API response. */
 export function getRoomView(state: RoomState, actor: Actor): RoomView {
   validateActor(state, actor);
@@ -205,5 +225,6 @@ export function getRoomView(state: RoomState, actor: Actor): RoomView {
     speakerPool: player?.id === state.speaker ? state.speakerPool : [],
     legalMoves: player ? getLegalMoves(state, player.id) : [],
     activeRing: activeRing(state), canUndo: actor.kind === 'host' && state.placements.length > 0,
+    pendingPreview: currentPreview(state),
   });
 }
