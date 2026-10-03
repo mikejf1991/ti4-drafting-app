@@ -39,11 +39,13 @@ type BoardProps = {
   previewTileId?: number | null;
   latestCellId?: string;
   newCellIds?: string[];
+  /** Another player's selected-but-unconfirmed move. */
+  pendingPreview?: { cellId: string; tileId: number; playerName: string } | null;
   onCellClick?: (cell: Cell) => void;
   compact?: boolean;
 };
 
-export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCellId, previewTileId, latestCellId, newCellIds = [], onCellClick, compact = false }: BoardProps) {
+export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCellId, previewTileId, pendingPreview, latestCellId, newCellIds = [], onCellClick, compact = false }: BoardProps) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const boardElement = useRef<HTMLDivElement>(null);
@@ -55,6 +57,7 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
   const recencyPolygon = hexPolygon(HEX_SIZE - 6);
   const secondaryRecencyPolygon = hexPolygon(HEX_SIZE - 12);
   const previewCell = selectedCellId && previewTileId != null && !board[selectedCellId] ? selectedCellId : null;
+  const pendingCell = pendingPreview && !board[pendingPreview.cellId] ? pendingPreview.cellId : null;
 
   useEffect(() => {
     const element = boardElement.current;
@@ -93,7 +96,8 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
       <g transform={`translate(${BOARD_WIDTH / 2 + pan.x} ${BOARD_HEIGHT / 2 + pan.y}) scale(${zoom})`}>
         {CELLS.map(cell => {
           const { x, y } = hexPoint(cell);
-          const tileId = board[cell.id] ?? (previewCell === cell.id ? previewTileId : null);
+          const pending = pendingCell === cell.id;
+          const tileId = board[cell.id] ?? (previewCell === cell.id ? previewTileId : pending ? pendingPreview!.tileId : null);
           const home = cell.homeIndex !== null;
           const owner = home ? players[cell.homeIndex!] : null;
           const ownerName = home ? owner?.name ?? `Player ${cell.homeIndex! + 1}` : '';
@@ -105,19 +109,21 @@ export function GalaxyBoard({ board, players = [], legalCellIds = [], selectedCe
           const tile = tileId != null ? TILES[tileId] : null;
           return <g key={cell.id} transform={`translate(${x} ${y})`} className={`board-cell ${allowed ? 'board-cell--legal' : ''} ${selected ? 'board-cell--selected' : ''} ${home ? 'board-cell--home' : ''}`}
             role={onCellClick ? 'button' : undefined} tabIndex={onCellClick ? 0 : undefined}
-            aria-label={`${home ? `${ownerName} home` : cell.ring === 0 ? 'Mecatol Rex' : `Ring ${cell.ring} cell ${cell.id}`}${tile ? `, ${tile.name}` : ', empty'}${latest ? ', latest placement' : ''}${newSinceVisit ? ', new since last visit' : ''}${allowed ? ', legal placement' : ''}`}
+            aria-label={`${home ? `${ownerName} home` : cell.ring === 0 ? 'Mecatol Rex' : `Ring ${cell.ring} cell ${cell.id}`}${tile ? `, ${tile.name}` : ', empty'}${latest ? ', latest placement' : ''}${newSinceVisit ? ', new since last visit' : ''}${pending ? `, pending placement by ${pendingPreview!.playerName}, not locked in` : ''}${allowed ? ', legal placement' : ''}`}
             onClick={() => { if (!suppressClick.current) onCellClick?.(cell); }}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCellClick?.(cell); } }}>
             {home && <title>{ownerName} home system</title>}
             <polygon points={polygon} className="hex-base"/>
-            {tileId != null && <image href={tileImage(tileId)} x={-HEX_SIZE} y={-Math.sqrt(3) * HEX_SIZE / 2} width={2 * HEX_SIZE} height={Math.sqrt(3) * HEX_SIZE} preserveAspectRatio="xMidYMid meet" clipPath={`url(#hex-${cell.id.replace(',', '-')})`} opacity={previewCell === cell.id ? .72 : 1}/>}
+            {tileId != null && <image href={tileImage(tileId)} x={-HEX_SIZE} y={-Math.sqrt(3) * HEX_SIZE / 2} width={2 * HEX_SIZE} height={Math.sqrt(3) * HEX_SIZE} preserveAspectRatio="xMidYMid meet" clipPath={`url(#hex-${cell.id.replace(',', '-')})`} opacity={previewCell === cell.id || pending ? .72 : 1}/>}
             <polygon points={polygon} className="hex-outline"/>
+            {pending && <polygon points={recencyPolygon} className="hex-pending" aria-hidden="true"/>}
             {latest && <polygon points={recencyPolygon} className="hex-recency hex-recency--latest" aria-hidden="true"/>}
             {newSinceVisit && <polygon points={latest ? secondaryRecencyPolygon : recencyPolygon} className="hex-recency hex-recency--new" aria-hidden="true"/>}
             {allowed && !tileId && <><circle r="15" className="legal-marker"/><text className="legal-marker-text" textAnchor="middle" dominantBaseline="middle">+</text></>}
             {home && <g className="home-owner-label" aria-hidden="true"><rect x="-43" y="-35" width="86" height="18" rx="4"/><text textAnchor="middle" y="-22">{shortOwnerName(ownerName)}</text></g>}
             {home && !tileId && <text className="home-placeholder-number" textAnchor="middle" y="14">{String(cell.homeIndex! + 1).padStart(2, '0')}</text>}
             {(latest || newSinceVisit) && <g className={`recency-tag ${latest ? 'recency-tag--latest' : 'recency-tag--new'}`} aria-hidden="true"><rect x={latest ? -27 : -19} y="23" width={latest ? 54 : 38} height="17" rx="3"/><text textAnchor="middle" y="35">{latest ? 'LATEST' : 'NEW'}</text></g>}
+            {pending && <g className="recency-tag recency-tag--pending" aria-hidden="true"><rect x="-32" y="23" width="64" height="17" rx="3"/><text textAnchor="middle" y="35">PENDING</text></g>}
             {previewCell === cell.id && <text className="preview-watermark" textAnchor="middle" y="47">PREVIEW</text>}
           </g>;
         })}
