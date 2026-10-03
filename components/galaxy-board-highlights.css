@@ -84,3 +84,14 @@
   font-size: 12px;
   line-height: 1.45;
 }
+
+/* SVG cells can't layer a rectangular focus outline; mark keyboard focus on the hex itself. */
+.board-cell:focus,
+.board-cell:focus-visible {
+  outline: none;
+}
+
+.board-cell:focus-visible:not(.board-cell--selected) .hex-outline {
+  stroke: #e1eef1;
+  stroke-width: 3;
+}
