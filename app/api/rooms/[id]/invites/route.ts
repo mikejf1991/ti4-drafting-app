@@ -15,6 +15,7 @@ export async function POST(request:Request,context:{params:Promise<{id:string}>}
     const next = structuredClone(state);
     next.players[input.seatId].tokenHash = tokenHash(token);
     next.revision++;
+    next.pendingPreview = null;
     next.updatedAt = new Date().toISOString();
     next.history.push({id:newToken().slice(0,16),text:`The host replaced ${next.players[input.seatId].name}'s invitation.`,at:next.updatedAt});
     next.history = next.history.slice(-100);

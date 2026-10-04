@@ -13,10 +13,18 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({type:z.literal('rank'),ranking:z.array(z.number().int()).length(8)}).strict(),
   z.object({type:z.literal('rename'),name:z.string().trim().min(1).max(32)}).strict(),
   z.object({type:z.literal('place'),tileId:z.number().int().min(1).max(80),cellId:z.string().regex(/^-?\d,-?\d$/)}).strict(),
+  z.object({type:z.literal('preview'),move:z.object({tileId:z.number().int().min(1).max(80),cellId:z.string().regex(/^-?\d,-?\d$/)}).strict().nullable()}).strict(),
   z.object({type:z.literal('undo')}).strict(),
   z.object({type:z.literal('practice-fill')}).strict(),
 ]);
 export const revisionSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+export const actionRequestSchema = z.object({
+  expectedRevision: revisionSchema,
+  expectedPreviewVersion: revisionSchema.optional(),
+  action: actionSchema,
+}).strict().refine(input => input.action.type !== 'preview' || input.expectedPreviewVersion !== undefined, {
+  message: 'A preview version is required for preview changes.', path: ['expectedPreviewVersion'],
+});
 
 export async function readBody<T>(request: Request, schema: z.ZodType<T>): Promise<T> {
   const origin = request.headers.get('origin');

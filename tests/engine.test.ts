@@ -455,3 +455,63 @@ describe('placement and recovery', () => {
     expect(() => applyAction(ready(), { kind: 'seat', seatId: 3 }, { type: 'rename', name: 'Bob' })).toThrow(/faction selection/);
   });
 });
+
+describe('shared placement previews', () => {
+  function previewing() {
+    const state = ready();
+    const seatId = getCurrentPlayer(state)!;
+    const move = getLegalMoves(state, seatId)[0];
+    const next = applyAction(state, { kind: 'seat', seatId }, { type: 'preview', move: { tileId: move.tileId, cellId: move.cellId } });
+    return { state, next, seatId, move };
+  }
+
+  it('shares the active player’s selection with every viewer without advancing the revision', () => {
+    const { state, next, seatId, move } = previewing();
+    expect(next.revision).toBe(state.revision);
+    expect(next.previewVersion).toBe((state.previewVersion ?? 0) + 1);
+    expect(next.board[move.cellId]).toBeUndefined();
+    const expected = { seatId, tileId: move.tileId, cellId: move.cellId };
+    expect(getRoomView(next, { kind: 'host' }).pendingPreview).toEqual(expected);
+    for (let viewer = 0; viewer < 8; viewer++) expect(getRoomView(next, { kind: 'seat', seatId: viewer }).pendingPreview).toEqual(expected);
+  });
+
+  it('replaces and clears the preview as the selection changes', () => {
+    const { next, seatId } = previewing();
+    const other = getLegalMoves(next, seatId)[1];
+    const moved = applyAction(next, { kind: 'seat', seatId }, { type: 'preview', move: { tileId: other.tileId, cellId: other.cellId } });
+    expect(moved.previewVersion).toBe(next.previewVersion! + 1);
+    expect(getRoomView(moved, { kind: 'host' }).pendingPreview).toMatchObject({ tileId: other.tileId, cellId: other.cellId });
+    const cleared = applyAction(moved, { kind: 'seat', seatId }, { type: 'preview', move: null });
+    expect(cleared.previewVersion).toBe(moved.previewVersion! + 1);
+    expect(getRoomView(cleared, { kind: 'host' }).pendingPreview).toBeNull();
+  });
+
+  it('clears the preview when the placement is confirmed or undone', () => {
+    const { next, seatId, move } = previewing();
+    const placed = applyAction(next, { kind: 'seat', seatId }, { type: 'place', tileId: move.tileId, cellId: move.cellId });
+    expect(placed.revision).toBe(next.revision + 1);
+    expect(placed.pendingPreview).toBeNull();
+    expect(getRoomView(placed, { kind: 'host' }).pendingPreview).toBeNull();
+    const nextSeat = getCurrentPlayer(placed)!;
+    const nextMove = getLegalMoves(placed, nextSeat)[0];
+    const previewed = applyAction(placed, { kind: 'seat', seatId: nextSeat }, { type: 'preview', move: { tileId: nextMove.tileId, cellId: nextMove.cellId } });
+    expect(applyAction(previewed, { kind: 'host' }, { type: 'undo' }).pendingPreview).toBeNull();
+  });
+
+  it('only accepts previews of the active player’s legal moves', () => {
+    const { state, seatId, move } = previewing();
+    const waiting = (seatId + 1) % 8;
+    expect(() => applyAction(state, { kind: 'seat', seatId: waiting }, { type: 'preview', move: { tileId: move.tileId, cellId: move.cellId } })).toThrow('It is not your turn.');
+    expect(() => applyAction(state, { kind: 'host' }, { type: 'preview', move: null })).toThrow();
+    expect(() => applyAction(state, { kind: 'seat', seatId }, { type: 'preview', move: { tileId: move.tileId, cellId: '0,0' } })).toThrow('That placement is not available.');
+    expect(() => applyAction(room(), { kind: 'seat', seatId: 0 }, { type: 'preview', move: null })).toThrow('Tile placement is not active.');
+  });
+
+  it('treats rooms saved before previews existed as having none', () => {
+    const state = ready();
+    delete state.pendingPreview;
+    delete state.previewVersion;
+    expect(getRoomView(state, { kind: 'host' }).pendingPreview).toBeNull();
+    expect(getRoomView(state, { kind: 'host' }).previewVersion).toBe(0);
+  });
+});

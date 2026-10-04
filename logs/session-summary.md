@@ -119,3 +119,14 @@ Discussion
 
 Outcome
 - Deployed 7867fe3. Passed 46 unit tests, production build, ten local and ten hosted HTTP scenarios, and browser checks for returning visits, Mark seen, identity switching and layout. Live browser showed exactly the three tiles placed while away, all eight home names, and correct player/faction.
+## 2026-10-04 17:11 America/Chicago
+Entry ID: LOG-0012
+
+Request
+- Implement Matt binerbuddy GitHub update requests.
+
+Discussion
+- Found finished PR1 for shared placement previews and exploratory issues2-5. Scope question received no reply; proceeded with the finished PR only, leaving proposals open. Reviewed and fixed stale-preview races, transient failures and same-seat tab conflicts while preserving confirmed moves and private hands.
+
+Outcome
+- Integrated Matt PR1 with preview-version compare-and-swap, bounded client retries and explicit local selection sync. Passed 99 tests, production build, thirteen local and thirteen real-Supabase HTTP checks, and multi-seat browser preview/cancel/reposition/confirm checks. Ready to deploy.

@@ -8,7 +8,7 @@ Status: implemented and deployed. Routine design defaults were selected under th
 - Eight players only initially. Use the full four-ring board shown in IMG_4675.heic, without hyperlanes.
 - Visually resemble a TI4 board with actual hex tile images. Avoid a generic card dashboard.
 - Each seat has a private link and can see only its own unplaced tiles.
-- A player clicks a tile, clicks a location, reviews a private preview, then confirms. Before confirmation, they can correct a misclick. Confirmed placement becomes public.
+- A player clicks a tile, clicks a location, then confirms. Matt's shared-preview update shows the selected tile and location to the table before confirmation with a PENDING marker; it reveals only that tile, not the rest of the hand. Before confirmation, the player can move or cancel it. Confirmation locks the tile onto the board.
 - Async by default; simultaneous online attendance should work with the same rules.
 - Desktop usability first; mobile support is secondary.
 - Supabase provides room persistence and Vercel hosts the app on the free Hobby plan.

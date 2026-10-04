@@ -54,9 +54,14 @@ export async function insertRoom(state: RoomState) {
   await database('', {method: 'POST', body: JSON.stringify({id:state.id, revision:state.revision, state})});
 }
 
-export async function saveRoom(state: RoomState, expectedRevision: number): Promise<boolean> {
+export async function saveRoom(state: RoomState, expectedRevision: number, expectedPreviewVersion?: number): Promise<boolean> {
   if (!localMode()) {
-    const rows = await database(`?id=eq.${encodeURIComponent(state.id)}&revision=eq.${expectedRevision}`, {
+    // JSON-path filtering keeps the preview CAS atomic without adding a database column.
+    // Missing and explicit null versions are legacy zero, matching the local comparison.
+    const previewFilter = expectedPreviewVersion === undefined ? '' : expectedPreviewVersion === 0
+      ? '&or=(state->>previewVersion.is.null,state->>previewVersion.eq.0)'
+      : `&state->>previewVersion=eq.${expectedPreviewVersion}`;
+    const rows = await database(`?id=eq.${encodeURIComponent(state.id)}&revision=eq.${expectedRevision}${previewFilter}`, {
       method: 'PATCH', body: JSON.stringify({state, revision:state.revision, updated_at:new Date().toISOString()}),
     });
     return rows.length === 1;
@@ -76,6 +81,7 @@ export async function saveRoom(state: RoomState, expectedRevision: number): Prom
   try {
     const previous = await getRoom(state.id);
     if (!previous || previous.revision !== expectedRevision) return false;
+    if (expectedPreviewVersion !== undefined && (previous.previewVersion ?? 0) !== expectedPreviewVersion) return false;
     await writeFile(temp, JSON.stringify(state), {mode:0o600});
     await rename(temp, file(state.id));
     return true;

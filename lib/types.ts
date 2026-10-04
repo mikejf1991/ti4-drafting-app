@@ -11,6 +11,8 @@ export interface PlayerState {
   factionId: number | null; hand: number[];
 }
 export interface Placement { id?: string; seatId: number; tileId: number; cellId: string; kind: 'seed' | 'draft'; exception: boolean; }
+/** The active player's selected-but-unconfirmed move, shared with every viewer. */
+export interface PendingPreview { seatId: number; tileId: number; cellId: string; }
 export interface HistoryEvent { id: string; text: string; at: string; }
 export interface RoomState {
   schemaVersion: 1; id: string; title: string; createdAt: string; updatedAt: string; revision: number;
@@ -19,12 +21,17 @@ export interface RoomState {
   speakerPool: number[];
   /** Server-only undealt deck during the opening; two leftover blue tiles after the normal deal. */
   unusedTiles: number[]; placements: Placement[]; history: HistoryEvent[];
+  /** Absent in rooms saved before previews existed. */
+  pendingPreview?: PendingPreview | null;
+  /** Orders preview writes within a gameplay revision; absent in older rooms means zero. */
+  previewVersion?: number;
 }
 export type Actor = { kind: 'host' } | { kind: 'seat'; seatId: number };
 export type RoomAction =
   | { type: 'rank'; ranking: number[] }
   | { type: 'rename'; name: string }
   | { type: 'place'; tileId: number; cellId: string }
+  | { type: 'preview'; move: { tileId: number; cellId: string } | null }
   | { type: 'undo' }
   | { type: 'practice-fill' };
 export interface PlayerView { id: number; name: string; ready: boolean; factionId: number | null; handCount: number; }
@@ -34,7 +41,7 @@ export interface RoomView {
   board: Record<string, number>; placements: Placement[]; history: HistoryEvent[];
   actor: Actor; myRanking: number[] | null; myHand: number[]; speakerPool: number[];
   legalMoves: {tileId: number; cellId: string; exception: boolean}[];
-  activeRing: number | null; canUndo: boolean;
+  activeRing: number | null; canUndo: boolean; pendingPreview: PendingPreview | null; previewVersion: number;
 }
 export interface CreateRoomInput {
   id: string; title: string; names: string[]; hostTokenHash: string;

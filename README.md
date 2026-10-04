@@ -28,6 +28,8 @@ The example environment explicitly sets `TI4_STORAGE=local`. Local room state is
 
 Players can return asynchronously using their saved links. Online clients refresh automatically. The host can undo the latest placement or replace a lost seat invitation, which invalidates that seat's old link. Original invitation values are kept in the creation tab's session storage; the server stores only their hashes. A saved host link allows invitation replacement from another session. Save the host link because the app has no host-link recovery flow.
 
+When the active player selects a tile and a legal hex, the table sees that one tile as a faded **PENDING** placement with a teal dashed outline. It is not on the confirmed board until the player confirms. Changing or cancelling the selection updates the shared preview; the rest of the hand and faction rankings remain private. Other viewers receive updates on their normal polling cycle (about three seconds while visible). A second tab follows the shared preview until the player makes a new selection there. Confirmation, host undo, and invitation replacement clear pending state.
+
 Practice rooms additionally offer sample ranking completion and shortcuts to open each seat. The host still uses a seat's private link to place its tiles.
 
 Your tile hand shows each planet's resources/influence as `R / I`, with labeled, color-coded technology skips. Multi-planet systems show a separate row for each planet, so inspecting the tile is optional.

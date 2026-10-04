@@ -35,6 +35,10 @@ const view = async token => {
   return result.data;
 };
 const act = async (token,action,revision) => request(`${route}/actions`,token,{expectedRevision:revision ?? (await view(token)).revision,action});
+const preview = (token, move, snapshot) => request(`${route}/actions`,token,{
+  expectedRevision:snapshot.revision,expectedPreviewVersion:snapshot.previewVersion,
+  action:{type:'preview',move},
+});
 async function assertOpeningViews(speaker, remaining) {
   const snapshots = await Promise.all(seatTokens.map(view));
   for (let seatId = 0; seatId < 8; seatId++) {
@@ -87,11 +91,15 @@ const speaker = host.speaker;
 const initialSpeaker = await assertOpeningViews(speaker, 4);
 assertColors(initialSpeaker.speakerPool, 2, 2);
 checks.push('Only the speaker sees four opening tiles; no player hand is dealt yet');
+const openingPreview = initialSpeaker.legalMoves[0];
+const openingSelection = {tileId:openingPreview.tileId,cellId:openingPreview.cellId};
+assert.equal((await preview(seatTokens[speaker],openingSelection,initialSpeaker)).status,200);
 const rotated = await request(`${route}/invites`,hostToken,{seatId:7,expectedRevision:host.revision});
 assert.equal(rotated.status,200);
 assert.equal((await request(route,seatTokens[7])).status,401);
 seatTokens[7]=rotated.data.token;
 assert.equal((await view(seatTokens[7])).actor.seatId,7);
+assert.equal((await view(hostToken)).pendingPreview,null);
 checks.push('Replacing an invitation revokes the previous link');
 host=await view(hostToken);
 const wrongPlayer=(host.currentPlayer+1)%8;
@@ -99,12 +107,45 @@ const speakerView=await view(seatTokens[host.currentPlayer]);
 const move=speakerView.legalMoves[0];
 assert.ok(move);
 const validMove={type:'place',tileId:move.tileId,cellId:move.cellId};
+const selection={tileId:move.tileId,cellId:move.cellId};
+assert.equal((await preview(hostToken,selection,speakerView)).status,400);
+assert.equal((await preview(seatTokens[wrongPlayer],selection,speakerView)).status,400);
+const missingVersion=await act(seatTokens[speaker],{type:'preview',move:selection},speakerView.revision);
+assert.equal(missingVersion.status,400);
+const selected=await preview(seatTokens[speaker],selection,speakerView);
+assert.equal(selected.status,200);
+assert.equal(selected.data.revision,speakerView.revision);
+assert.equal(selected.data.previewVersion,speakerView.previewVersion+1);
+const observed=await view(seatTokens[wrongPlayer]);
+assert.deepEqual(observed.pendingPreview,{seatId:speaker,...selection});
+assert.deepEqual(observed.board,speakerView.board);
+assert.equal(observed.placements.length,0);
+assert.deepEqual(observed.myHand,[]);
+assert.deepEqual(observed.speakerPool,[]);
+assert.equal((await view(hostToken)).pendingPreview.tileId,selection.tileId);
+checks.push('Only the active player can share a legal preview; observers see only the pending tile');
+const cleared=await preview(seatTokens[speaker],null,selected.data);
+assert.equal(cleared.status,200);
+assert.equal(cleared.data.pendingPreview,null);
+assert.equal((await preview(seatTokens[speaker],selection,selected.data)).status,409);
+const previewRace=await Promise.all([
+  preview(seatTokens[speaker],selection,cleared.data),
+  preview(seatTokens[speaker],null,cleared.data),
+]);
+assert.deepEqual(previewRace.map(r=>r.status).sort(),[200,409]);
+const currentPreview=await view(seatTokens[speaker]);
+const finalPreview=await preview(seatTokens[speaker],selection,currentPreview);
+assert.equal(finalPreview.status,200);
+checks.push('Preview versions prevent stale clears and racing selections without changing the draft revision');
 const outOfTurn=await act(seatTokens[wrongPlayer],validMove);
 assert.equal(outOfTurn.status,400);
 assert.match(outOfTurn.data.error,/not your turn/i);
 assert.equal((await act(hostToken,validMove)).status,400);
 const attempt=await Promise.all([act(seatTokens[host.currentPlayer],validMove,host.revision),act(seatTokens[host.currentPlayer],validMove,host.revision)]);
 assert.deepEqual(attempt.map(r=>r.status).sort(),[200,409]);
+assert.equal((await view(hostToken)).pendingPreview,null);
+assert.equal((await preview(seatTokens[speaker],selection,finalPreview.data)).status,409);
+checks.push('Confirmation succeeds after preview at the same draft revision and clears pending state');
 assert.equal((await act(hostToken,{type:'undo'})).status,200);
 assert.equal((await view(hostToken)).placements.length,0);
 checks.push('Placement is authorized and atomic; host undo restores the move');

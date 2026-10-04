@@ -349,3 +349,33 @@ Verification
 
 Open Items
 - None. Refresh existing player tabs for the updated UI; unseen history begins from the first visit with this feature in that browser.
+## 2026-10-04 17:11 America/Chicago
+Entry ID: LOG-0012
+
+Request
+- Implement Matt binerbuddy GitHub update requests.
+
+Context
+- Baseline afee320, tracked files clean; nine original untracked reference media untouched. GitHub user is binerbuddy (user called him binderbuddy). PR #1 at 278a258 contains finished preview/focus updates; issues #2–5 are exploratory TTS, formats, accounts and retention proposals with open decisions.
+- Asked asynchronously whether scope included proposals. No reply received; stated assumption to complete PR #1 and leave all four proposals open. Original private-preview behavior intentionally changes to reveal only the tile under consideration for table discussion.
+
+Actions
+- Integrated Matt's branch with merge ancestry preserved. Added faded public pending tile, teal dashed outline/tag, observer note, and hex-shaped keyboard focus without the rectangular SVG focus box.
+- Review found stale same-revision preview overwrites, permanent suppression after a failed request, and multiple same-seat tabs fighting. Added previewVersion CAS beside the unchanged gameplay revision, atomic local/JSON-path Supabase filters, and stale-response ordering. Preview requests require expectedPreviewVersion; old rooms default to zero without a migration.
+- Client sends explicit local selection/cancellation changes, queues the latest selection, retries with bounded backoff and a manual Retry sharing control, and aborts/cleans up on identity change or unmount. Passive same-seat tabs follow remote preview; reload preserves it rather than clearing another tab's selection. Confirm, undo and invitation replacement clear pending state.
+- Updated docs and HTTP verifier; only marked practice rooms were created. No user draft resets, GitHub comments, new access grants, account/provider changes or database schema changes.
+
+Files Changed
+- engine/types/server/store/routes,board/client/CSS,preview regression tests,HTTP verifier,README/rules/state/logs
+
+Change Scope
+- Intent and actual: implement finished PR #1 and repair synchronization review findings. Broader issues #2–5 remain open for scope/design decisions.
+
+Verification
+- Passed 99 tests and final production build including TypeScript; whitespace checks passed.
+- Thirteen HTTP checks passed on local storage at port 3005 and a production build using the real Supabase backend at port 3184. Verified legacy version handling, private access, pending projection, preview race winners, missing version rejection, stale clear/select protection, confirm-after-preview, invitation replacement, undo/deal/snake and 61-cell completion.
+- Browser: Morgan previewed Thibah, observer Jamie saw PENDING and zero hand tiles; same-seat tab passively followed. Cancel cleared the marker, reposition moved it, and confirm left one LATEST tile, no pending marker and three opening tiles remaining, with no error.
+- Independent backend review found no further blocker. Ready for GitHub/Vercel deployment verification.
+
+Open Items
+- Verify hosted deployment and PR merge state after push. Keep proposals #2–5 open; no designs chosen for them.

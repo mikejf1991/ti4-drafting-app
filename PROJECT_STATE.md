@@ -11,7 +11,7 @@
 
 ## Current State
 
-- Active Objective: Complete. Home-system adjacency interpretation, player/home labels, and latest/unseen highlights are deployed and verified live.
+- Active Objective: Publish and verify Matt's PR #1 shared placement previews; exploratory issues #2–5 remain open pending scope/design decisions.
 - Live App: https://ti4-drafting-app.vercel.app
 - Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
 - Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
@@ -21,16 +21,19 @@
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: None.
-- Change Scope: Exclude home positions from drafting adjacency restrictions; add personal identity, public home names, and latest/since-last-visit placement highlights.
-- Worktree Baseline: Tracked files clean at fd20e91; dirty only from nine pre-existing untracked reference media files.
+- Active Task: Review and integrate PR #1 with verified preview privacy, synchronization, and confirmation behavior.
+- Change Scope: Integrate shared pending placement and hex keyboard focus updates, repair concrete review findings, and verify local/live behavior.
+- Worktree Baseline: Tracked files clean at afee320; dirty only from nine pre-existing untracked reference media files.
 - Pre-existing Dirty Files: IMG_4675.heic, IMG_4676.heic, IMG_4677.heic, IMG_4678.heic, IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg, ScreenRecording_08-18-2026 10-30-08_1.mp4.
-- Last Meaningful Action: Deployed 7867fe3; verified all ten hosted API scenarios and live return-visit highlights. LOG-0011 records the completed change.
-- Files In Flight: None after verification closeout; original nine reference media files remain unchanged and untracked.
-- Verification Status: Passed 46 unit tests, production build/TypeScript, ten local and ten hosted HTTP scenarios, and local/hosted browser checks. Actual change scope matches intent; verification passed.
-- Resume From: Live app above; refresh existing tabs. Local preview remains http://127.0.0.1:3005.
+- Last Meaningful Action: Integrated Matt PR #1 and fixed stale previews, failed sync retries and same-seat tab conflicts. LOG-0012 records scope and validation.
+- Files In Flight: PR merge plus engine/store/routes/client regression fixes, docs and logs. Original reference media untouched.
+- Verification Status: Passed 99 tests, final build/TypeScript, thirteen local and thirteen real-Supabase HTTP checks, and multi-seat browser preview/cancel/reposition/confirm tests. Hosted deployment pending.
+- Resume From: Commit/push reviewed merge, verify Vercel/PR state and hosted browser. Local preview remains http://127.0.0.1:3005; temporary Supabase-backed production server is on 3184.
 
 ## Open Loops
+
+- GitHub proposals #2 TTS export, #3 selectable formats/content, #4 Google accounts and #5 deletion/expiry were found alongside finished PR #1. Scope question got no answer; they remain open, with no destructive retention or new account policy assumed.
+- Pending previews reveal only the chosen tile/hex to the table, and do not consume a hand tile or gameplay turn. Preview writes have a separate version for atomic conflict checks; legacy rooms default to zero. Passive duplicate seat tabs/reload follow the saved preview until a local edit; retries are bounded with a manual retry control.
 
 - Always use C:\Users\polymergroup\Desktop\TI4 Drafting App for project commands. The chat opened a different Documents\ChatGPT folder; no project work belongs there.
 - Supabase credentials remain only in ignored .env.local and sensitive Vercel server environment variables. Never print or commit them. Screenshots/test fixtures remain in ignored .scratch.
