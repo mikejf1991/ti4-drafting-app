@@ -129,4 +129,4 @@ Discussion
 - Found finished PR1 for shared placement previews and exploratory issues2-5. Scope question received no reply; proceeded with the finished PR only, leaving proposals open. Reviewed and fixed stale-preview races, transient failures and same-seat tab conflicts while preserving confirmed moves and private hands.
 
 Outcome
-- Integrated Matt PR1 with preview-version compare-and-swap, bounded client retries and explicit local selection sync. Passed 99 tests, production build, thirteen local and thirteen real-Supabase HTTP checks, and multi-seat browser preview/cancel/reposition/confirm checks. Ready to deploy.
+- Merged PR1 as a1a3863 and verified Vercel deployment. Passed 99 tests, production build, thirteen checks each on local storage, real Supabase and the live app, plus multi-seat and live browser preview/cancel checks. Issues2-5 remain open as proposals; no scope reply was received.

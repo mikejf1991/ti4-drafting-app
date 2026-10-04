@@ -11,7 +11,7 @@
 
 ## Current State
 
-- Active Objective: Publish and verify Matt's PR #1 shared placement previews; exploratory issues #2–5 remain open pending scope/design decisions.
+- Active Objective: Complete for Matt's PR #1: merged, deployed and verified. Exploratory issues #2–5 remain open pending scope/design decisions.
 - Live App: https://ti4-drafting-app.vercel.app
 - Hosting: Vercel Hobby, team mikejf1991s-projects, project ti4-drafting-app. GitHub main deploys automatically.
 - Storage: Existing authorized Supabase project nvbxtjmioxidblitnsck; isolated public.ti4_draft_rooms_v1 table with RLS and no anon/authenticated privileges. No SWPA tables changed.
@@ -21,19 +21,20 @@
 ## Active Session Handoff
 
 - Current Branch: main
-- Active Task: Review and integrate PR #1 with verified preview privacy, synchronization, and confirmation behavior.
+- Active Task: None; finished PR #1 implementation pass.
 - Change Scope: Integrate shared pending placement and hex keyboard focus updates, repair concrete review findings, and verify local/live behavior.
 - Worktree Baseline: Tracked files clean at afee320; dirty only from nine pre-existing untracked reference media files.
 - Pre-existing Dirty Files: IMG_4675.heic, IMG_4676.heic, IMG_4677.heic, IMG_4678.heic, IMG_4680.jpeg, IMG_4681.heic, IMG_4682.jpeg, IMG_4684.jpeg, ScreenRecording_08-18-2026 10-30-08_1.mp4.
-- Last Meaningful Action: Integrated Matt PR #1 and fixed stale previews, failed sync retries and same-seat tab conflicts. LOG-0012 records scope and validation.
-- Files In Flight: PR merge plus engine/store/routes/client regression fixes, docs and logs. Original reference media untouched.
-- Verification Status: Passed 99 tests, final build/TypeScript, thirteen local and thirteen real-Supabase HTTP checks, and multi-seat browser preview/cancel/reposition/confirm tests. Hosted deployment pending.
-- Resume From: Commit/push reviewed merge, verify Vercel/PR state and hosted browser. Local preview remains http://127.0.0.1:3005; temporary Supabase-backed production server is on 3184.
+- Last Meaningful Action: Merged PR #1 as a1a3863, verified Vercel deployment, all thirteen hosted HTTP checks and live pending/cancel UI. LOG-0012 records scope and validation.
+- Files In Flight: None after verification closeout. Original reference media untouched.
+- Verification Status: Passed 99 tests, final build/TypeScript, thirteen checks each against local storage, real Supabase and the hosted app, plus multi-seat browser checks. Actual scope matches PR #1 and synchronization fixes; verification passed.
+- Resume From: Live app above; refresh existing tabs. Local preview remains http://127.0.0.1:3005. Temporary Supabase-backed server3184 stopped.
 
 ## Open Loops
 
 - GitHub proposals #2 TTS export, #3 selectable formats/content, #4 Google accounts and #5 deletion/expiry were found alongside finished PR #1. Scope question got no answer; they remain open, with no destructive retention or new account policy assumed.
 - Pending previews reveal only the chosen tile/hex to the table, and do not consume a hand tile or gameplay turn. Preview writes have a separate version for atomic conflict checks; legacy rooms default to zero. Passive duplicate seat tabs/reload follow the saved preview until a local edit; retries are bounded with a manual retry control.
+- Shared-preview live test room78931c88-f753-425b-b3ea-2ea35859aa53 contains a pending Thibah for speaker Tristen and no confirmed placements. Screenshot/links remain ignored in .scratch; use only as a practice fixture.
 
 - Always use C:\Users\polymergroup\Desktop\TI4 Drafting App for project commands. The chat opened a different Documents\ChatGPT folder; no project work belongs there.
 - Supabase credentials remain only in ignored .env.local and sensitive Vercel server environment variables. Never print or commit them. Screenshots/test fixtures remain in ignored .scratch.

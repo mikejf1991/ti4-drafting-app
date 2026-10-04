@@ -375,7 +375,8 @@ Verification
 - Passed 99 tests and final production build including TypeScript; whitespace checks passed.
 - Thirteen HTTP checks passed on local storage at port 3005 and a production build using the real Supabase backend at port 3184. Verified legacy version handling, private access, pending projection, preview race winners, missing version rejection, stale clear/select protection, confirm-after-preview, invitation replacement, undo/deal/snake and 61-cell completion.
 - Browser: Morgan previewed Thibah, observer Jamie saw PENDING and zero hand tiles; same-seat tab passively followed. Cancel cleared the marker, reposition moved it, and confirm left one LATEST tile, no pending marker and three opening tiles remaining, with no error.
-- Independent backend review found no further blocker. Ready for GitHub/Vercel deployment verification.
+- Independent backend review found no further blocker. Vercel reported a1a3863 deployed successfully; all thirteen hosted HTTP scenarios passed including preview race/privacy/clear and a complete 61-cell map.
+- Pushed merge a1a3863 with Matt's original ancestry. GitHub reports PR #1 merged. Live browser showed the Tristen/Thibah pending tile to observer Henry with zero hand tiles; cancelling removed it and selecting again restored it. Saved proof at ignored .scratch/hosted-shared-preview.png.
 
 Open Items
-- Verify hosted deployment and PR merge state after push. Keep proposals #2–5 open; no designs chosen for them.
+- PR #1 complete. Keep proposals #2–5 open; no designs chosen for them. Refresh existing player tabs. Temporary Supabase-backed production server3184 stopped; localdev3005 remains available.
